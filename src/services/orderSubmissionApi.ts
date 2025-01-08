@@ -18,6 +18,7 @@ interface OrderItem {
   color?: string;
   personalization?: string;
   pack: string;
+  box?: string;
 }
 
 interface PriceDetails {

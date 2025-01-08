@@ -42,7 +42,8 @@ const OrderPreviewPage = () => {
         size: item.size || '-',
         color: item.color || '-',
         personalization: item.personalization || '-',
-        pack: packType
+        pack: packType,
+        box: item.withBox ? 'Avec box' : 'Sans box'
       }));
 
       const orderData = {

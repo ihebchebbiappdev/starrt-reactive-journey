@@ -1,5 +1,5 @@
 import React from 'react';
-import { MinusCircle, PlusCircle, Trash2, Tag, Edit2, Package } from 'lucide-react';
+import { MinusCircle, PlusCircle, Trash2, Tag, Edit2, Package, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CartItem } from './CartProvider';
 import PersonalizationInput from './PersonalizationInput';
@@ -36,6 +36,12 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }: CartItemCardProps) =
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[#700100]/10 text-[#700100]">
                 <Package size={12} />
                 {packType}
+              </span>
+            )}
+            {item.withBox && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-[#700100]/10 text-[#700100]">
+                <Gift size={12} />
+                + Box cadeau
               </span>
             )}
           </div>
