@@ -24,8 +24,10 @@ interface CartContextType {
   hasNewsletterDiscount: boolean;
   applyNewsletterDiscount: () => void;
   removeNewsletterDiscount: () => void;
-  calculateTotal: () => { subtotal: number; discount: number; total: number };
+  calculateTotal: () => { subtotal: number; discount: number; total: number; boxTotal: number };
 }
+
+const BOX_PRICE = 6969;
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -59,7 +61,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         i.id === item.id && 
         i.size === item.size && 
         i.color === item.color && 
-        i.personalization === item.personalization
+        i.personalization === item.personalization &&
+        i.withBox === item.withBox
       );
       
       if (existingItem) {
@@ -67,7 +70,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           i.id === item.id && 
           i.size === item.size && 
           i.color === item.color && 
-          i.personalization === item.personalization
+          i.personalization === item.personalization &&
+          i.withBox === item.withBox
             ? { ...i, quantity: i.quantity + item.quantity }
             : i
         );
@@ -106,11 +110,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const calculateTotal = () => {
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const discount = hasNewsletterDiscount && cartItems.length > 0 ? subtotal * 0.05 : 0;
+    const itemsSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const boxTotal = cartItems.reduce((sum, item) => sum + (item.withBox ? BOX_PRICE * item.quantity : 0), 0);
+    const subtotal = itemsSubtotal + boxTotal;
+    const discount = hasNewsletterDiscount ? subtotal * 0.05 : 0;
     const total = subtotal - discount;
     
-    return { subtotal, discount, total };
+    return { subtotal: itemsSubtotal, discount, total, boxTotal };
   };
 
   return (
@@ -137,4 +143,3 @@ export const useCart = () => {
   }
   return context;
 };
-

@@ -54,11 +54,9 @@ const ProductDetailModal = ({ isOpen, onClose, product }: ProductDetailModalProp
       return;
     }
 
-    const itemName = withBox ? `${product.name} [+ Box]` : product.name;
-
     addToCart({
       id: product.id,
-      name: itemName,
+      name: product.name,
       price: product.price,
       image: product.image,
       quantity: quantity,
@@ -71,8 +69,8 @@ const ProductDetailModal = ({ isOpen, onClose, product }: ProductDetailModalProp
     playTickSound();
     toast({
       title: "Produit ajouté au panier",
-      description: `${quantity} x ${itemName} (${selectedSize}) ajouté avec succès`,
-      duration: 5000,
+      description: `${quantity} x ${product.name} (${selectedSize}) ajouté avec succès`,
+      duration: 3000,
       style: {
         backgroundColor: '#700100',
         color: 'white',

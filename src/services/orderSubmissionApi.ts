@@ -52,15 +52,32 @@ interface OrderSubmission {
 }
 
 export const submitOrder = async (orderData: OrderSubmission): Promise<any> => {
-  console.log('Submitting order:', orderData);
+  const { cartItems, userDetails } = orderData;
+  const packType = sessionStorage.getItem('selectedPackType') || 'aucun';
   
   try {
+    const formattedItems = cartItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price + (item.withBox ? 6969 : 0),
+      quantity: item.quantity,
+      image: item.image,
+      size: item.size || '-',
+      color: item.color || '-',
+      personalization: item.personalization || '-',
+      pack: packType,
+      box: item.withBox ? 'Avec box' : 'Sans box'
+    }));
+
     const response = await fetch('https://respizenmedical.com/fiori/submit_all_order.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderData),
+      body: JSON.stringify({
+        ...orderData,
+        items: formattedItems
+      }),
     });
 
     if (!response.ok) {
