@@ -20,7 +20,7 @@ interface ApiResponse {
     itemgroup_product: string;
     price_product: string;
     qnty_product: string;
-    xs_size: string;
+    xxl2_size: string;
     s_size: string;
     m_size: string;
     l_size: string;
@@ -55,15 +55,14 @@ export const fetchAllProducts = async (): Promise<Product[]> => {
         relatedProducts: product.related_products,
         colorProduct: product.color_product,
         sizes: {
-          xs: parseInt(product.xs_size),
           s: parseInt(product.s_size),
           m: parseInt(product.m_size),
           l: parseInt(product.l_size),
           xl: parseInt(product.xl_size),
           xxl: parseInt(product.xxl_size),
+          xxl2: parseInt(product.xxl2_size),
         },
         quantity: parseInt(product.qnty_product),
-        // Add the new fields
         type_product: product.type_product,
         category_product: product.category_product,
         itemgroup_product: product.itemgroup_product,

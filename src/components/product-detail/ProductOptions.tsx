@@ -21,6 +21,7 @@ const ProductOptions = ({
   selectedSize,
   setSelectedSize,
   selectedColor,
+  setSelectedColor,
   quantity,
   setQuantity,
   onAddToCart,
@@ -30,6 +31,11 @@ const ProductOptions = ({
 }: ProductOptionsProps) => {
   const [isBoxDialogOpen, setIsBoxDialogOpen] = useState(false);
   const [selectedBoxOption, setSelectedBoxOption] = useState<boolean | null>(null);
+
+  const displaySize = (size: string) => {
+    if (size === 'XXL2') return '2XXL';
+    return size;
+  };
 
   const handleAddToCartClick = () => {
     if (!selectedSize) {
@@ -53,7 +59,7 @@ const ProductOptions = ({
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-base font-semibold text-gray-900">
-            Taille {selectedSize ? `sélectionnée: ${selectedSize}` : ''}
+            Taille {selectedSize ? `sélectionnée: ${displaySize(selectedSize)}` : ''}
           </span>
           <button className="text-xs text-[#700100] hover:underline">
             Guide des tailles
@@ -70,7 +76,7 @@ const ProductOptions = ({
                   : 'bg-white border border-gray-200 text-gray-900 hover:border-[#700100] hover:bg-gray-50'
                 }`}
             >
-              {size}
+              {displaySize(size)}
             </button>
           ))}
         </div>
