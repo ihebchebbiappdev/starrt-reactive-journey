@@ -51,70 +51,44 @@ interface OrderSubmission {
   order_status: OrderStatus;
 }
 
-const sendOrderConfirmationEmail = async (orderData: OrderSubmission): Promise<void> => {
-  console.log('Sending order confirmation email with data:', orderData);
+export const submitOrder = async (orderData: OrderSubmission): Promise<any> => {
+  const { cartItems, userDetails } = orderData;
+  const packType = sessionStorage.getItem('selectedPackType') || 'aucun';
   
   try {
-    const response = await fetch('https://fioriforyou.com/testsmtp.php', {
+    const formattedItems = cartItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price + (item.withBox ? 6969 : 0),
+      quantity: item.quantity,
+      image: item.image,
+      size: item.size || '-',
+      color: item.color || '-',
+      personalization: item.personalization || '-',
+      pack: packType,
+      box: item.withBox ? 'Avec box' : 'Sans box'
+    }));
+
+    const response = await fetch('https://respizenmedical.com/fiori/submit_all_order.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
       },
-      mode: 'cors',
-      body: JSON.stringify(orderData),
+      body: JSON.stringify({
+        ...orderData,
+        items: formattedItems
+      }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Email API error response:', errorText);
-      throw new Error(`Email API error: ${response.status} - ${errorText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('Email confirmation response:', result);
+    console.log('Order submission result:', result);
+    return result;
   } catch (error) {
-    console.error('Error sending confirmation email:', error);
-    throw new Error(`Failed to send confirmation email: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-};
-
-export const submitOrder = async (orderData: OrderSubmission): Promise<any> => {
-  console.log('Submitting order with data:', orderData);
-
-  try {
-    // First submit the order
-    const orderResponse = await fetch('https://respizenmedical.com/fiori/submit_all_order.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      mode: 'cors',
-      body: JSON.stringify(orderData),
-    });
-
-    if (!orderResponse.ok) {
-      const errorText = await orderResponse.text();
-      console.error('Order submission error response:', errorText);
-      throw new Error(`Order submission failed: ${orderResponse.status} - ${errorText}`);
-    }
-
-    const orderResult = await orderResponse.json();
-    console.log('Order submission successful:', orderResult);
-
-    // If order submission is successful, send confirmation email
-    try {
-      await sendOrderConfirmationEmail(orderData);
-      console.log('Email confirmation sent successfully');
-    } catch (emailError) {
-      // Log email error but don't fail the order submission
-      console.error('Email confirmation failed but order was submitted:', emailError);
-    }
-
-    return orderResult;
-  } catch (error) {
-    console.error('Error in order process:', error);
+    console.error('Error submitting order:', error);
     throw error;
   }
 };

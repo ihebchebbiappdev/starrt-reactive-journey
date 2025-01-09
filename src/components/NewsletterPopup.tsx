@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { useCart } from './cart/CartProvider';
 import axios from 'axios';
 
 const NewsletterPopup = () => {
@@ -11,24 +10,22 @@ const NewsletterPopup = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { applyNewsletterDiscount } = useCart();
 
   useEffect(() => {
-    // Check if user has already subscribed
-    const hasSubscribed = localStorage.getItem('newsletterSubscribed');
+    const hasSeenPopup = localStorage.getItem('hasSeenNewsletterPopup');
     
-    if (!hasSubscribed) {
-      // Show popup after 3 seconds
+    if (!hasSeenPopup) {
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 3000);
-      
+      }, 5000);
+
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleClose = () => {
     setIsVisible(false);
+    localStorage.setItem('hasSeenNewsletterPopup', 'true');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,46 +34,25 @@ const NewsletterPopup = () => {
 
     try {
       const response = await axios.post('https://respizenmedical.com/fiori/subscribe_email.php', {
-        email: email
+        email
       });
 
       if (response.data.status === 'success') {
-        // Save subscription status
-        localStorage.setItem('newsletterSubscribed', 'true');
-        localStorage.setItem('subscribedEmail', email);
-        
-        // Apply discount
-        applyNewsletterDiscount();
-        
         toast({
           title: "Inscription réussie !",
-          description: "Merci de vous être inscrit à notre newsletter. Votre réduction de 5% a été appliquée à votre panier.",
-          duration: 3000,
+          description: "Merci de vous être inscrit à notre newsletter.",
+          duration: 3000, // Set to 3 seconds
         });
-        
         handleClose();
       } else {
-        // Show the specific error message from the API
-        throw new Error(response.data.message || 'Une erreur est survenue');
+        throw new Error(response.data.message);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Newsletter subscription error:', error);
-      
-      // Extract the actual error message
-      let errorMessage = 'Une erreur s\'est produite lors de l\'inscription.';
-      
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message.includes('Duplicate entry')) {
-        errorMessage = 'Cette adresse email est déjà inscrite à notre newsletter.';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: errorMessage,
+        description: "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.",
         duration: 3000,
       });
     } finally {
@@ -134,7 +110,7 @@ const NewsletterPopup = () => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-white text-[#700100] hover:bg-white/90 transition-colors"
+                className="w-full bg-white text-primary hover:bg-white/90 transition-colors"
               >
                 {isLoading ? "Inscription..." : "S'inscrire"}
               </Button>

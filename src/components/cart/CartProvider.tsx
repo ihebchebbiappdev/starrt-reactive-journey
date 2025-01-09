@@ -34,7 +34,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [hasNewsletterDiscount, setHasNewsletterDiscount] = useState<boolean>(() => {
-    return localStorage.getItem('newsletterSubscribed') === 'true';
+    return localStorage.getItem('newsletterDiscount') === 'true';
   });
 
   useEffect(() => {
@@ -48,12 +48,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (itemsWithPersonalization.length > 0) {
       setCartItems(itemsWithPersonalization);
-    }
-
-    // Check for newsletter subscription on mount
-    const isSubscribed = localStorage.getItem('newsletterSubscribed') === 'true';
-    if (isSubscribed) {
-      setHasNewsletterDiscount(true);
     }
   }, []);
 
@@ -102,16 +96,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    removeNewsletterDiscount();
   };
 
   const applyNewsletterDiscount = () => {
     setHasNewsletterDiscount(true);
-    localStorage.setItem('newsletterSubscribed', 'true');
+    localStorage.setItem('newsletterDiscount', 'true');
   };
 
   const removeNewsletterDiscount = () => {
     setHasNewsletterDiscount(false);
-    localStorage.removeItem('newsletterSubscribed');
+    localStorage.removeItem('newsletterDiscount');
   };
 
   const calculateTotal = () => {
