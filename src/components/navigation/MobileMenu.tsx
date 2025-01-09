@@ -2,6 +2,7 @@ import React from 'react';
 import { X, MapPin, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SubMenuSectionMobile from './SubMenuSectionMobile';
+import { Link } from 'react-router-dom';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -104,15 +105,12 @@ const MobileMenu = ({
               </li>
 
               <li className="text-white/90">
-                <div className="group">
-                  <SubMenuSectionMobile
-                    title="Le sur mesure"
-                    items={[
-                      { href: "/category/sur-mesure/homme/portefeuilles", title: "Portefeuilles", description: "Portefeuilles sur mesure" },
-                      { href: "/category/sur-mesure/homme/ceintures", title: "Ceintures", description: "Ceintures sur mesure" }
-                    ]}
-                  />
-                </div>
+                <Link
+                  to="/sur-mesure"
+                  className="block py-3 px-4 text-lg text-white hover:text-white/80 transition-colors duration-300 hover:bg-white/5 rounded-lg"
+                >
+                  Le sur mesure
+                </Link>
               </li>
 
               <li className="text-white/90">
