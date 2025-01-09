@@ -27,7 +27,7 @@ const MainNavbarMenus = () => {
         <AccessoiresSection />
       </NavMenuItem>
 
-      <Link to="/sur-mesure" className="text-[#700100] text-[16px] lg:text-[21px] hover:text-[#8B0000] transition-colors">
+      <Link to="/sur-mesure" className="text-white text-[16px] lg:text-[21px] hover:text-white/80 transition-colors">
         Le sur mesure
       </Link>
 
