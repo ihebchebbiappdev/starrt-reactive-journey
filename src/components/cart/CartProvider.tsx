@@ -27,7 +27,7 @@ interface CartContextType {
   calculateTotal: () => { subtotal: number; discount: number; total: number; boxTotal: number };
 }
 
-const BOX_PRICE = 30;
+const BOX_PRICE = 6969;
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 

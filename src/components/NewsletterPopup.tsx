@@ -18,7 +18,12 @@ const NewsletterPopup = () => {
     const hasSubscribed = localStorage.getItem('newsletterSubscribed');
     
     if (!hasSubscribed) {
-      setIsVisible(true);
+      // Show popup after 3 seconds
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -32,7 +37,7 @@ const NewsletterPopup = () => {
 
     try {
       const response = await axios.post('https://respizenmedical.com/fiori/subscribe_email.php', {
-        email
+        email: email
       });
 
       if (response.data.status === 'success') {
@@ -40,7 +45,7 @@ const NewsletterPopup = () => {
         localStorage.setItem('newsletterSubscribed', 'true');
         localStorage.setItem('subscribedEmail', email);
         
-        // Apply discount if available
+        // Apply discount
         applyNewsletterDiscount();
         
         toast({
@@ -51,7 +56,7 @@ const NewsletterPopup = () => {
         
         handleClose();
       } else {
-        throw new Error(response.data.message);
+        throw new Error(response.data.message || 'Une erreur est survenue');
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
@@ -116,7 +121,7 @@ const NewsletterPopup = () => {
               <Button 
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-white text-primary hover:bg-white/90 transition-colors"
+                className="w-full bg-white text-[#700100] hover:bg-white/90 transition-colors"
               >
                 {isLoading ? "Inscription..." : "S'inscrire"}
               </Button>
