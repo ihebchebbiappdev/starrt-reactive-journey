@@ -75,7 +75,7 @@ const Footer = () => {
             <h3 className="font-semibold text-sm mb-4">CONTACTEZ-NOUS</h3>
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
-                <span className="inline-block">+212-529-15-93-92</span>
+                <span className="inline-block">+216 29 509 840</span>
               </li>
               <li>
                 <a href="#" className="hover:underline flex items-center gap-2">
