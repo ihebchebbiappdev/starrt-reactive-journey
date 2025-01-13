@@ -79,11 +79,11 @@ const MobileMenu = ({
                   <SubMenuSectionMobile
                     title="Le prêt à porter"
                     items={[
-                      { href: "/category/pret-a-porter/homme/costumes", title: "Costumes", description: "Costumes élégants" },
-                      { href: "/category/pret-a-porter/homme/blazers", title: "Blazers", description: "Blazers raffinés" },
-                      { href: "/category/pret-a-porter/homme/chemises", title: "Chemises", description: "Chemises classiques" },
-                      { href: "/category/pret-a-porter/homme/pantalons", title: "Pantalons", description: "Pantalons élégants" },
-                      { href: "/category/pret-a-porter/homme/pollo", title: "Pollo", description: "Polos élégants" }
+                      { href: "/category/pret-a-porter/homme/costumes", title: "Costume", description: "Costumes élégants" },
+                      { href: "/category/pret-a-porter/homme/blazers", title: "Blazer", description: "Blazers raffinés" },
+                      { href: "/category/pret-a-porter/homme/chemises", title: "Chemise", description: "Chemises classiques" },
+                      { href: "/category/pret-a-porter/homme/pantalons", title: "Pantalon", description: "Pantalons élégants" },
+                      { href: "/category/pret-a-porter/homme/pollo", title: "Polo", description: "Polos élégants" }
                     ]}
                   />
                 </div>
@@ -94,11 +94,11 @@ const MobileMenu = ({
                   <SubMenuSectionMobile
                     title="Accessoires"
                     items={[
-                      { href: "/category/accessoires/homme/portefeuilles", title: "Portefeuilles", description: "Portefeuilles élégants" },
-                      { href: "/category/accessoires/homme/ceintures", title: "Ceintures", description: "Ceintures raffinées" },
-                      { href: "/category/accessoires/homme/cravates", title: "Cravates", description: "Cravates élégantes" },
-                      { href: "/category/accessoires/homme/mallettes", title: "Mallettes", description: "Mallettes professionnelles" },
-                      { href: "/category/accessoires/homme/porte-cartes", title: "Porte-cartes", description: "Porte-cartes élégants" }
+                      { href: "/category/accessoires/homme/portefeuilles", title: "Portefeuille", description: "Portefeuilles élégants" },
+                      { href: "/category/accessoires/homme/ceintures", title: "Ceinture", description: "Ceintures raffinées" },
+                      { href: "/category/accessoires/homme/cravates", title: "Cravate", description: "Cravates élégantes" },
+                      { href: "/category/accessoires/homme/mallettes", title: "Mallette", description: "Mallettes professionnelles" },
+                      { href: "/category/accessoires/homme/porte-cartes", title: "Porte-carte", description: "Porte-cartes élégants" }
                     ]}
                   />
                 </div>
@@ -118,8 +118,8 @@ const MobileMenu = ({
                   <SubMenuSectionMobile
                     title="Outlet"
                     items={[
-                      { href: "/category/outlet/homme/costumes", title: "Costumes", description: "Costumes en promotion" },
-                      { href: "/category/outlet/homme/blazers", title: "Blazers", description: "Blazers en solde" }
+                      { href: "/category/outlet/homme/costumes", title: "Costume", description: "Costumes en promotion" },
+                      { href: "/category/outlet/homme/blazers", title: "Blazer", description: "Blazers en solde" }
                     ]}
                   />
                 </div>

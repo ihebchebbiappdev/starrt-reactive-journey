@@ -15,7 +15,11 @@ const MainNavbarMenus = () => {
         <MondeFioriSection />
       </NavMenuItem>
 
-      <NavMenuItem title="L'univers Cadeaux" image="/Menu/Universcadeau.png">
+      <NavMenuItem 
+        title="L'univers Cadeaux" 
+        image="/Menu/Universcadeau.png"
+        href="/univers-cadeaux"
+      >
         <GiftUniverseMenu />
       </NavMenuItem>
 
@@ -38,12 +42,12 @@ const MainNavbarMenus = () => {
             items={[
               {
                 href: "/category/outlet/homme/costumes",
-                title: "Costumes",
+                title: "Costume",
                 description: "Costumes en promotion"
               },
               {
                 href: "/category/outlet/homme/blazers",
-                title: "Blazers",
+                title: "Blazer",
                 description: "Blazers en solde"
               }
             ]}
