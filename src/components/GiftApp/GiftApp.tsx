@@ -8,6 +8,7 @@ import ProductSelectionPanel from "./ProductSelectionPanel";
 import GiftBasket3D from "./GiftBasket3D";
 import PackSummary from "./PackSummary";
 import ConfirmationButton from "./ConfirmationButton";
+import AddToCartSuccessModal from "../cart/AddToCartSuccessModal";
 import { Product } from "@/types/product";
 import { Package2, Gift } from 'lucide-react';
 
@@ -22,6 +23,7 @@ const GiftApp = () => {
   const [selectedItems, setSelectedItems] = useState<Product[]>([]);
   const [packNote, setPackNote] = useState("");
   const [selectedContainerIndex, setSelectedContainerIndex] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -202,20 +204,8 @@ const GiftApp = () => {
       });
     }
 
-    toast({
-      title: "Pack Ajouté au Panier! 🎉",
-      description: packPrice > 0 
-        ? `Pack et frais de packaging (${packPrice} TND) ajoutés au panier`
-        : "Pack ajouté au panier",
-      style: {
-        backgroundColor: '#700100',
-        color: 'white',
-        border: '1px solid #590000',
-      },
-    });
-
     setIsLoading(false);
-    navigate('/cart');
+    setShowSuccessModal(true);
   };
 
   const handleItemDrop = (item: Product) => {
@@ -314,6 +304,12 @@ const GiftApp = () => {
           </motion.div>
         </div>
       </div>
+
+      <AddToCartSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        productName={packType}
+      />
     </div>
   );
 };
