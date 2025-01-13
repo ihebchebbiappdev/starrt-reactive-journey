@@ -41,7 +41,7 @@ const AddItemDialog = ({
         <div className="space-y-6">
           <SizeSelector
             selectedSize={selectedSize}
-            sizes={['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL']}
+            sizes={[ 'S', 'M', 'L', 'XL', 'XXL','3XL']}
             onSizeSelect={onSizeSelect}
           />
           
