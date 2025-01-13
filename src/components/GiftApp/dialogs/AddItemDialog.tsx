@@ -53,11 +53,16 @@ const AddItemDialog = ({
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
-          <SizeSelector
-            selectedSize={selectedSize}
-            sizes={availableSizes}
-            onSizeSelect={onSizeSelect}
-          />
+          {availableSizes.length > 0 ? (
+            <SizeSelector
+              selectedSize={selectedSize}
+              sizes={availableSizes}
+              onSizeSelect={onSizeSelect}
+              isCostume={droppedItem?.itemgroup_product === 'costumes'}
+            />
+          ) : (
+            <p className="text-red-500">Aucune taille disponible pour ce produit</p>
+          )}
           
           <PersonalizationButton
             productId={droppedItem?.id || 0}
@@ -68,11 +73,11 @@ const AddItemDialog = ({
           <button
             onClick={onConfirm}
             className={`w-full py-4 rounded-xl text-white font-medium ${
-              !selectedSize
+              !selectedSize || availableSizes.length === 0
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-[#6D0201] hover:bg-[#590000]'
             }`}
-            disabled={!selectedSize}
+            disabled={!selectedSize || availableSizes.length === 0}
           >
             Confirmer
           </button>
