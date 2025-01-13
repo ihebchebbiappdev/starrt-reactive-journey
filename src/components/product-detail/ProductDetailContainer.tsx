@@ -97,11 +97,6 @@ const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContai
     });
 
     onProductAdded?.(product.name);
-    
-    toast({
-      title: "Produit ajouté au panier",
-      description: `${quantity} x ${product.name} (Taille: ${selectedSize})`,
-    });
   };
 
   const handleInitialAddToCart = () => {
