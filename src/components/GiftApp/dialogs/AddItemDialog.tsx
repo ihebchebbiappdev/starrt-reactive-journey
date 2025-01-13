@@ -30,6 +30,20 @@ const AddItemDialog = ({
   onPersonalizationChange,
   onConfirm,
 }: AddItemDialogProps) => {
+  const getAvailableSizes = (product: Product | null): string[] => {
+    if (!product || !product.sizes) return [];
+
+    return product.itemgroup_product === 'costumes'
+      ? Object.entries(product.sizes)
+          .filter(([key, stock]) => ['48', '50', '52', '54', '56', '58'].includes(key) && stock > 0)
+          .map(([size]) => size)
+      : Object.entries(product.sizes)
+          .filter(([key, stock]) => ['s', 'm', 'l', 'xl', 'xxl', '3xl'].includes(key.toLowerCase()) && stock > 0)
+          .map(([size]) => size.toUpperCase());
+  };
+
+  const availableSizes = getAvailableSizes(droppedItem);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] bg-white/95">
@@ -41,7 +55,7 @@ const AddItemDialog = ({
         <div className="space-y-6">
           <SizeSelector
             selectedSize={selectedSize}
-            sizes={[ 'S', 'M', 'L', 'XL', 'XXL','3XL']}
+            sizes={availableSizes}
             onSizeSelect={onSizeSelect}
           />
           
