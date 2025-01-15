@@ -59,7 +59,7 @@ const CheckoutConfirmationModal = ({ isOpen, onClose, productName }: CheckoutCon
             <Button
               onClick={onClose}
               variant="outline"
-              className="flex-1 border-[#700100] text-[#700100] hover:bg-[#700100] hover:text-white py-6 rounded-lg flex items-center justify-center gap-2"
+              className="flex-1 bg-[#000] hover:bg-[#700100] text-white py-6 rounded-lg flex items-center justify-center gap-2"
             >
               <ShoppingBag className="h-5 w-5" />
               Continuer mes achats
