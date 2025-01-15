@@ -105,15 +105,6 @@ const MobileMenu = ({
               </li>
 
               <li className="text-white/90">
-                <Link
-                  to="/sur-mesure"
-                  className="block py-3 px-4 text-lg text-white hover:text-white/80 transition-colors duration-300 hover:bg-white/5 rounded-lg"
-                >
-                  Le sur mesure
-                </Link>
-              </li>
-
-              <li className="text-white/90">
                 <div className="group">
                   <SubMenuSectionMobile
                     title="Outlet"
