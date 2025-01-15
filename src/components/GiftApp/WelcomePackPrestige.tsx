@@ -28,18 +28,22 @@ function WelcomePackPrestige({ onCompose }) {
                 Composez votre coffret
               </button>
             </div>
+
+            {/* Updated mobile layout */}
             <div className="grid grid-cols-1 sm:grid-cols-2 h-full">
-              <div className="space-y-1 mr-[-40%]">
+              {/* Images container with updated mobile layout */}
+              <div className="flex flex-row space-x-2 lg:space-x-0 lg:space-y-1 lg:mr-[-40%] lg:flex-col mb-4 lg:mb-0">
                 {content.images.map((image, index) => (
                   <img 
                     key={index}
                     src={image}
                     alt={`${content.title} showcase ${index + 1}`}
-                    className="w-[35%] h-[160px] object-cover mx-auto"
+                    className="w-[33%] lg:w-[35%] h-[120px] lg:h-[160px] object-cover lg:mx-auto"
                   />
                 ))}
               </div>
-              <div className="h-[480px] sm:h-full">
+              {/* Video container */}
+              <div className="h-[300px] lg:h-[480px] sm:h-full">
                 <VideoPreview
                   videoUrl={content.videoUrl}
                   onClick={() => setIsVideoOpen(true)}
