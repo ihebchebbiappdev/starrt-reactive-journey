@@ -42,10 +42,13 @@ const ProductSelectionPanel = ({
       let filteredProducts = data;
       const categories = getAvailableCategories(packType, selectedContainerIndex, selectedItems);
       
-      console.log('Filtering with categories:', categories);
-      
       if (categories.length > 0) {
         filteredProducts = data.filter(product => {
+          // For chemises, only show men's shirts
+          if (product.itemgroup_product === 'chemises') {
+            return product.category_product === 'homme';
+          }
+
           return categories.some(category => {
             if (category.type === 'itemgroup') {
               return product.itemgroup_product === category.value;
