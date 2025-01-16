@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useCart } from "../cart/CartProvider";
 import { toast } from "@/hooks/use-toast";
@@ -38,18 +38,19 @@ const GiftApp = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleConfirmPack = async () => {
-    if (isSubmitting) return; // Prevent double submission
-    
-    console.log('Confirming pack with items:', selectedItems);
-    
+  const handleConfirmPack = useCallback(async () => {
+    if (isSubmitting) {
+      console.log('Submission already in progress, preventing double submission');
+      return;
+    }
+
     if (!validatePackSelection(selectedItems, containerCount, packType)) {
       return;
     }
 
     setIsSubmitting(true);
     setIsLoading(true);
-    
+
     try {
       const packPrice = getPackPrice(packType);
       const packImage = getPackImage(packType);
@@ -69,11 +70,9 @@ const GiftApp = () => {
           pack: "aucun",
         });
       }
-      
-      for (const item of selectedItems) {
-        console.log('Adding item to cart:', item);
-        await new Promise(resolve => setTimeout(resolve, 100)); // Reduced delay
-        
+
+      // Add all items synchronously to prevent race conditions
+      selectedItems.forEach(item => {
         const itemToAdd = {
           ...item,
           quantity: 1,
@@ -83,10 +82,8 @@ const GiftApp = () => {
           color: item.color || '-',
           fromPack: true
         };
-
-        console.log('Final item being added to cart:', itemToAdd);
         addToCart(itemToAdd);
-      }
+      });
 
       toast({
         title: "Pack Ajouté au Panier! 🎉",
@@ -100,6 +97,7 @@ const GiftApp = () => {
         },
       });
 
+      // Immediate navigation to cart
       navigate('/cart');
     } catch (error) {
       console.error('Error adding pack to cart:', error);
@@ -112,7 +110,7 @@ const GiftApp = () => {
       setIsLoading(false);
       setIsSubmitting(false);
     }
-  };
+  }, [isSubmitting, selectedItems, containerCount, packType, addToCart, navigate]);
 
   const handleItemDrop = (item: Product, size: string, personalization: string) => {
     console.log('Item dropped with size:', size, 'and personalization:', personalization);
