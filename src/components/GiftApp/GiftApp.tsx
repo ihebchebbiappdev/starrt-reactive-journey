@@ -23,6 +23,7 @@ const GiftApp = () => {
   const [selectedItems, setSelectedItems] = useState<Product[]>([]);
   const [packNote, setPackNote] = useState("");
   const [selectedContainerIndex, setSelectedContainerIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const packType = sessionStorage.getItem('selectedPackType') || 'Pack Trio';
@@ -38,64 +39,79 @@ const GiftApp = () => {
   }, []);
 
   const handleConfirmPack = async () => {
+    if (isSubmitting) return; // Prevent double submission
+    
     console.log('Confirming pack with items:', selectedItems);
     
     if (!validatePackSelection(selectedItems, containerCount, packType)) {
       return;
     }
 
+    setIsSubmitting(true);
     setIsLoading(true);
-    const packPrice = getPackPrice(packType);
-    const packImage = getPackImage(packType);
     
-    if (packPrice > 0) {
-      addToCart({
-        id: Date.now(),
-        name: `${packType} - Frais de packaging`,
-        price: packPrice,
-        quantity: 1,
-        image: packImage,
-        type_product: "Pack",
-        itemgroup_product: "Pack",
-        size: "-",
-        color: "-",
-        personalization: "-",
-        pack: "aucun",
-      });
-    }
-    
-    for (const item of selectedItems) {
-      console.log('Adding item to cart:', item);
-      await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const packPrice = getPackPrice(packType);
+      const packImage = getPackImage(packType);
       
-      const itemToAdd = {
-        ...item,
-        quantity: 1,
-        personalization: item.personalization || '-',
-        pack: packType,
-        size: item.size || '-',
-        color: item.color || '-',
-        fromPack: true
-      };
+      if (packPrice > 0) {
+        addToCart({
+          id: Date.now(),
+          name: `${packType} - Frais de packaging`,
+          price: packPrice,
+          quantity: 1,
+          image: packImage,
+          type_product: "Pack",
+          itemgroup_product: "Pack",
+          size: "-",
+          color: "-",
+          personalization: "-",
+          pack: "aucun",
+        });
+      }
+      
+      for (const item of selectedItems) {
+        console.log('Adding item to cart:', item);
+        await new Promise(resolve => setTimeout(resolve, 100)); // Reduced delay
+        
+        const itemToAdd = {
+          ...item,
+          quantity: 1,
+          personalization: item.personalization || '-',
+          pack: packType,
+          size: item.size || '-',
+          color: item.color || '-',
+          fromPack: true
+        };
 
-      console.log('Final item being added to cart:', itemToAdd);
-      addToCart(itemToAdd);
+        console.log('Final item being added to cart:', itemToAdd);
+        addToCart(itemToAdd);
+      }
+
+      toast({
+        title: "Pack Ajouté au Panier! 🎉",
+        description: packPrice > 0 
+          ? `Pack et frais de packaging (${packPrice} TND) ajoutés au panier`
+          : "Pack ajouté au panier",
+        style: {
+          backgroundColor: '#700100',
+          color: 'white',
+          border: '1px solid #590000',
+        },
+      });
+
+      navigate('/cart');
+    } catch (error) {
+      console.error('Error adding pack to cart:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'ajout au panier",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      setIsSubmitting(false);
     }
-
-    toast({
-      title: "Pack Ajouté au Panier! 🎉",
-      description: packPrice > 0 
-        ? `Pack et frais de packaging (${packPrice} TND) ajoutés au panier`
-        : "Pack ajouté au panier",
-      style: {
-        backgroundColor: '#700100',
-        color: 'white',
-        border: '1px solid #590000',
-      },
-    });
-
-    setIsLoading(false);
-    navigate('/cart');
   };
 
   const handleItemDrop = (item: Product, size: string, personalization: string) => {
@@ -185,7 +201,7 @@ const GiftApp = () => {
             />
             <ConfirmationButton
               onConfirm={handleConfirmPack}
-              disabled={selectedItems.length === 0}
+              disabled={selectedItems.length === 0 || isSubmitting}
             />
           </div>
         </div>
