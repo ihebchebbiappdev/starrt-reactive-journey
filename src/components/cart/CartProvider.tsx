@@ -2,7 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { saveCartItems, getCartItems } from '@/utils/cartStorage';
 import { getPersonalizations } from '@/utils/personalizationStorage';
 import { calculateDiscountedPrice } from '@/utils/priceCalculations';
+import { getPersonalizationPrice } from '@/utils/personalizationPricing';
 import { toast } from "@/hooks/use-toast";
+import { stockReduceManager } from '@/utils/StockReduce';
 
 export interface CartItem {
   id: number;
@@ -90,9 +92,21 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         ? calculateDiscountedPrice(item.price, item.discount_product)
         : item.price;
 
+      const personalizationPrice = getPersonalizationPrice(
+        item.itemgroup_product || '',
+        item.personalization,
+        item.fromPack || false
+      );
+
+      console.log('Adding item to cart with prices:', {
+        basePrice: finalPrice,
+        personalizationPrice,
+        total: finalPrice + personalizationPrice
+      });
+
       const itemWithPack = {
         ...item,
-        price: finalPrice,
+        price: finalPrice + personalizationPrice,
         originalPrice: item.discount_product ? item.price : undefined,
         pack: item.pack || 'aucun',
         size: item.size || '-',
@@ -106,30 +120,31 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const removeFromCart = (id: number) => {
     const itemToRemove = cartItems.find(item => item.id === id);
     
-    if (itemToRemove && itemToRemove.fromPack) {
-      const packType = itemToRemove.pack;
-      
-      // Remove all items from the same pack
+    if (itemToRemove) {
       setCartItems(prevItems => {
-        const remainingItems = prevItems.filter(item => 
-          !(item.pack === packType && item.fromPack)
-        );
+        // If the item is from a pack, remove all items from that pack including the pack itself
+        if (itemToRemove.fromPack || itemToRemove.type_product === "Pack") {
+          const packType = itemToRemove.pack;
+          const remainingItems = prevItems.filter(item => 
+            !(item.pack === packType && (item.fromPack || item.type_product === "Pack"))
+          );
+          
+          toast({
+            title: "Pack supprimé",
+            description: `Le pack ${packType} et tous ses articles ont été supprimés du panier`,
+            style: {
+              backgroundColor: '#700100',
+              color: 'white',
+              border: '1px solid #590000',
+            },
+          });
+          
+          return remainingItems;
+        }
         
-        toast({
-          title: "Pack supprimé",
-          description: `Le pack ${packType} a été entièrement supprimé du panier`,
-          style: {
-            backgroundColor: '#700100',
-            color: 'white',
-            border: '1px solid #590000',
-          },
-        });
-        
-        return remainingItems;
+        // Regular item removal
+        return prevItems.filter(item => item.id !== id);
       });
-    } else {
-      // Regular item removal
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
     }
   };
 
@@ -146,6 +161,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    stockReduceManager.clearItems();
   };
 
   const applyNewsletterDiscount = () => {

@@ -104,19 +104,19 @@ const PersonalizationInput = ({ itemId, onUpdate, itemGroup }: PersonalizationIn
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-[#700100] hover:text-[#590000] hover:bg-[#700100]/10"
+              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-[#700100] text-[#590000] bg-[#700100]"
               onClick={() => setIsEditing(true)}
             >
               <Edit2 className="h-4 w-4" />
             </Button>
-            <Button
+          {/*   <Button
               size="icon"
               variant="ghost"
               className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700 hover:bg-red-50"
               onClick={handleRemove}
             >
               <X className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </div>
       )}
