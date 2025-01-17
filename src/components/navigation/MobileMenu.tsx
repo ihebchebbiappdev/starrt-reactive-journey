@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { X, MapPin, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SubMenuSectionMobile from './SubMenuSectionMobile';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -25,6 +25,7 @@ const MobileMenu = ({
 }: MobileMenuProps) => {
   const [touchStart, setTouchStart] = React.useState(0);
   const [touchEnd, setTouchEnd] = React.useState(0);
+  const location = useLocation();
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientX);
@@ -42,9 +43,14 @@ const MobileMenu = ({
     setTouchEnd(0);
   };
 
-  const handleItemClick = (callback: () => void) => {
-    callback();
-    onClose();
+  const handleLinkClick = (href: string, callback?: () => void) => {
+    // Only close if it's a valid link and not the current page
+    if (href && href !== "#" && href !== location.pathname) {
+      if (callback) {
+        callback();
+      }
+      onClose();
+    }
   };
 
   return (
@@ -82,7 +88,7 @@ const MobileMenu = ({
                       { href: "/monde-fiori/collection", title: "Collection", description: "Nos collections" },
                       { href: "/monde-fiori/dna", title: "DNA", description: "Notre ADN" }
                     ]}
-                    onClick={onClose}
+                    onClick={(href) => handleLinkClick(href)}
                   />
                 </div>
               </li>
@@ -98,7 +104,7 @@ const MobileMenu = ({
                       { href: "/univers-cadeaux/packduo", title: "Pack Duo", description: "Ensemble de deux pièces" },
                       { href: "/univers-cadeaux/packminiduo", title: "Pack Mini Duo", description: "Petit ensemble duo" }
                     ]}
-                    onClick={onClose}
+                    onClick={(href) => handleLinkClick(href)}
                   />
                 </div>
               </li>
@@ -114,6 +120,7 @@ const MobileMenu = ({
                       { href: "/category/pret-a-porter/homme/pantalons", title: "Pantalon", description: "Pantalons élégants" },
                       { href: "/category/pret-a-porter/homme/pollo", title: "Polo", description: "Polos élégants" }
                     ]}
+                    onClick={(href) => handleLinkClick(href)}
                   />
                 </div>
               </li>
@@ -129,6 +136,7 @@ const MobileMenu = ({
                       { href: "/category/accessoires/homme/mallettes", title: "Mallette", description: "Mallettes professionnelles" },
                       { href: "/category/accessoires/homme/porte-cartes", title: "Porte-carte", description: "Porte-cartes élégants" }
                     ]}
+                    onClick={(href) => handleLinkClick(href)}
                   />
                 </div>
               </li>
@@ -147,13 +155,14 @@ const MobileMenu = ({
                       { href: "/category/outlet/femme/robes", title: "Robes", description: "Robes en solde" },
                       { href: "/category/outlet/femme/vestes", title: "Vestes/Manteaux", description: "Vestes et manteaux en promotion" }
                     ]}
+                    onClick={(href) => handleLinkClick(href)}
                   />
                 </div>
               </li>
 
               <li className="mt-6 border-t border-white/10 pt-6 space-y-4">
                 <button
-                  onClick={() => handleItemClick(onStoreClick)}
+                  onClick={() => handleLinkClick("#", onStoreClick)}
                   className="w-full flex items-center gap-3 text-white hover:text-white/80 transition-colors duration-300 py-3 px-4 rounded-lg hover:bg-white/5 group"
                 >
                   <MapPin size={20} className="group-hover:scale-110 transition-transform duration-300" />
@@ -161,14 +170,13 @@ const MobileMenu = ({
                 </button>
 
                 <button
-                  onClick={() => handleItemClick(onContactClick)}
+                  onClick={() => handleLinkClick("#", onContactClick)}
                   className="w-full flex items-center gap-3 text-white hover:text-white/80 transition-colors duration-300 py-3 px-4 rounded-lg hover:bg-white/5 group"
                 >
                   <Phone size={20} className="group-hover:scale-110 transition-transform duration-300" />
                   <span className="text-lg group-hover:translate-x-1 transition-transform duration-300">Contactez-nous</span>
                 </button>
               </li>
-
             </ul>
           </div>
         </motion.div>
