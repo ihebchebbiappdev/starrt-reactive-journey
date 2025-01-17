@@ -40,7 +40,7 @@ const BeltsSection = () => {
     }
     return {
       title: "Collection Accessoires",
-      subtitle: "ARTISANAT",
+      subtitle: "-",
       description: "Découvrez nos créations exclusives, façonnées avec passion et savoir-faire en Tunisie.",
       imageUrl: "/Articles/Main.png"
     };

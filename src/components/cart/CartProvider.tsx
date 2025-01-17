@@ -5,6 +5,7 @@ import { calculateDiscountedPrice } from '@/utils/priceCalculations';
 import { getPersonalizationPrice } from '@/utils/personalizationPricing';
 import { toast } from "@/hooks/use-toast";
 import { stockReduceManager } from '@/utils/StockReduce';
+import { clearDevCache } from '@/utils/devUtils';
 
 export interface CartItem {
   id: number;
@@ -47,6 +48,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   useEffect(() => {
+    clearDevCache();
     const savedItems = getCartItems();
     const personalizations = getPersonalizations();
     
@@ -65,7 +67,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cartItems]);
 
   const addToCart = (item: CartItem) => {
+    console.log('Adding item to cart:', item);
+    
     setCartItems(prevItems => {
+      if (item.fromPack || item.type_product === "Pack") {
+        const packType = item.pack;
+        const existingPackItems = prevItems.filter(i => i.pack === packType);
+        if (existingPackItems.some(i => i.id === item.id)) {
+          console.log('Item already exists in pack, skipping...');
+          return prevItems;
+        }
+      }
+
       const existingItem = prevItems.find(i => 
         i.id === item.id && 
         i.size === item.size && 
@@ -98,12 +111,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         item.fromPack || false
       );
 
-      console.log('Adding item to cart with prices:', {
-        basePrice: finalPrice,
-        personalizationPrice,
-        total: finalPrice + personalizationPrice
-      });
-
       const itemWithPack = {
         ...item,
         price: finalPrice + personalizationPrice,
@@ -122,27 +129,36 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (itemToRemove) {
       setCartItems(prevItems => {
-        // If the item is from a pack, remove all items from that pack including the pack itself
-        if (itemToRemove.fromPack || itemToRemove.type_product === "Pack") {
-          const packType = itemToRemove.pack;
-          const remainingItems = prevItems.filter(item => 
-            !(item.pack === packType && (item.fromPack || item.type_product === "Pack"))
-          );
+        // If the item is a pack packaging fee or from a pack
+        if (itemToRemove.type_product === "Pack" || itemToRemove.fromPack) {
+          const packType = itemToRemove.type_product === "Pack" 
+            ? itemToRemove.name.split(' - ')[0]  // Extract pack type from packaging fee name
+            : itemToRemove.pack;
+          
+          // Remove all items from this pack including the packaging fee
+          const remainingItems = prevItems.filter(item => {
+            const isPackagingFee = item.type_product === "Pack" && 
+                                 item.name.split(' - ')[0] === packType;
+            const isPackItem = item.pack === packType && item.fromPack;
+            
+            return !isPackagingFee && !isPackItem;
+          });
           
           toast({
             title: "Pack supprimé",
-            description: `Le pack ${packType} et tous ses articles ont été supprimés du panier`,
+            description: "Le pack et tous ses articles ont été supprimés du panier",
             style: {
               backgroundColor: '#700100',
               color: 'white',
               border: '1px solid #590000',
             },
+            duration: 5000,
           });
           
           return remainingItems;
         }
         
-        // Regular item removal
+        // Regular item removal (non-pack items)
         return prevItems.filter(item => item.id !== id);
       });
     }
@@ -171,7 +187,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const usedDiscountEmails = JSON.parse(localStorage.getItem('usedDiscountEmails') || '[]');
     
     if (usedDiscountEmails.includes(subscribedEmail)) {
-      console.log('Email has already used the newsletter discount');
       setHasNewsletterDiscount(false);
       localStorage.removeItem('newsletterSubscribed');
       return;

@@ -23,12 +23,6 @@ const PaymentSuccessPage = () => {
         const pendingOrderString = sessionStorage.getItem('pendingOrder');
         if (!pendingOrderString) {
           console.error('No pending order found');
-          toast({
-            title: "Error",
-            description: "No pending order found. Please complete the checkout process.",
-            variant: "destructive",
-            duration: Infinity
-          });
           return;
         }
 

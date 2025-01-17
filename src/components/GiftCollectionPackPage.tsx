@@ -2,9 +2,9 @@ import React from "react";
 
 const GiftCollectionPackPage = () => {
   const items = [
-    { src: "https://respizenmedical.com/fiori/Prestige/1.png", label: "Pack Prestige", href: "/univers-cadeaux/packprestige" },
-    { src: "https://respizenmedical.com/fiori/Premium/1.png", label: "Pack Premium", href: "/univers-cadeaux/packpremium" },
-    { src: "https://respizenmedical.com/fiori/Trio/1.png", label: "Pack Trio", href: "/univers-cadeaux/packtrio" },
+    { src: "/Packs/PackPrestige2.png", label: "Pack Prestige", href: "/univers-cadeaux/packprestige" },
+    { src: "/Packs/PackPremuim.jpg", label: "Pack Premium", href: "/univers-cadeaux/packpremium" },
+    { src: "/Packs/PackTrio.jpg", label: "Pack Trio", href: "/univers-cadeaux/packtrio" },
     { src: "packduo.png", label: "Pack Duo", href: "/univers-cadeaux/packduo" },
     { src: "Packduomini2.png", label: "Pack Mini Duo", href: "/univers-cadeaux/packminiduo" },
   ];
