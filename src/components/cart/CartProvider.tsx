@@ -70,35 +70,52 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('Adding item to cart:', item);
     
     setCartItems(prevItems => {
-      if (item.fromPack || item.type_product === "Pack") {
-        const packType = item.pack;
-        const existingPackItems = prevItems.filter(i => i.pack === packType);
-        if (existingPackItems.some(i => i.id === item.id)) {
-          console.log('Item already exists in pack, skipping...');
+      // For pack packaging fees (type_product === "Pack")
+      if (item.type_product === "Pack") {
+        const existingPackagingFee = prevItems.find(i => 
+          i.type_product === "Pack" && 
+          i.name === item.name
+        );
+        
+        if (existingPackagingFee) {
+          console.log('Pack packaging fee already exists, skipping...');
           return prevItems;
         }
       }
 
-      const existingItem = prevItems.find(i => 
-        i.id === item.id && 
-        i.size === item.size && 
-        i.color === item.color && 
-        i.personalization === item.personalization &&
-        i.withBox === item.withBox &&
-        i.pack === item.pack
-      );
-      
-      if (existingItem) {
-        return prevItems.map(i =>
+      // For items from a pack
+      if (item.fromPack) {
+        const packType = item.pack;
+        const existingPackItem = prevItems.find(i => 
+          i.id === item.id && 
+          i.pack === packType && 
+          i.fromPack === true &&
+          i.size === item.size &&
+          i.personalization === item.personalization
+        );
+        
+        if (existingPackItem) {
+          console.log('Item already exists in pack, skipping...');
+          return prevItems;
+        }
+      } else {
+        // For regular items (not from pack)
+        const existingItem = prevItems.find(i => 
           i.id === item.id && 
           i.size === item.size && 
           i.color === item.color && 
           i.personalization === item.personalization &&
           i.withBox === item.withBox &&
-          i.pack === item.pack
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
+          (!i.fromPack && !item.fromPack) // Only match if both items are not from pack
         );
+        
+        if (existingItem) {
+          return prevItems.map(i =>
+            i === existingItem
+              ? { ...i, quantity: i.quantity + item.quantity }
+              : i
+          );
+        }
       }
 
       const finalPrice = item.discount_product 
@@ -111,7 +128,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         item.fromPack || false
       );
 
-      const itemWithPack = {
+      const itemWithDetails = {
         ...item,
         price: finalPrice + personalizationPrice,
         originalPrice: item.discount_product ? item.price : undefined,
@@ -120,7 +137,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         personalization: item.personalization || '-'
       };
 
-      return [...prevItems, itemWithPack];
+      return [...prevItems, itemWithDetails];
     });
   };
 
