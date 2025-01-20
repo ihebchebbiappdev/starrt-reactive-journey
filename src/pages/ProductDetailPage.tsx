@@ -48,14 +48,6 @@ const ProductDetailPage = () => {
     setShowCheckoutModal(true);
   };
 
-  // Get related products if any are specified
-  const relatedProductIds = product.relatedProducts
-    ? product.relatedProducts.split(',').map(Number)
-    : [];
-  const relatedProductsList = products?.filter(p => 
-    relatedProductIds.includes(p.id)
-  ) || [];
-
   return (
     <ProductDetailLayout onBack={() => navigate(-1)}>
       <ProductDetailContainer 
@@ -77,9 +69,10 @@ const ProductDetailPage = () => {
         onClose={() => setShowCheckoutModal(false)}
         productName={addedProductName}
       />
-        <Suspense fallback={null}>
-                      <WhatsAppPopup />
-   </Suspense>
+      
+      <Suspense fallback={null}>
+        <WhatsAppPopup />
+      </Suspense>
     </ProductDetailLayout>
   );
 };

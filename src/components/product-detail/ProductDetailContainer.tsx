@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Product } from '@/types/product';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,8 +7,14 @@ import { useCart } from '@/hooks/use-cart';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
+import { Product } from '@/types/product';
 
-const ProductDetailContainer = ({ product }: { product: Product }) => {
+interface ProductDetailContainerProps {
+  product: Product;
+  onProductAdded?: (productName: string) => void;
+}
+
+const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContainerProps) => {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -53,6 +58,9 @@ const ProductDetailContainer = ({ product }: { product: Product }) => {
 
     addItem(itemToAdd);
     toast.success("Article ajouté au panier");
+    if (onProductAdded) {
+      onProductAdded(product.name);
+    }
   };
 
   const availableSizes = Object.entries(product.sizes)
