@@ -1,190 +1,176 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/types/product';
-import { useCart } from '@/components/cart/CartProvider';
-import { useToast } from "@/hooks/use-toast";
-import ProductImageCarousel from './ProductImageCarousel';
-import ProductInfo from './ProductInfo';
-import PersonalizationButton from './PersonalizationButton';
-import BoxSelectionDialog from './BoxSelectionDialog';
-import SizeSelector from './SizeSelector';
-import ProductQuantitySelector from './ProductQuantitySelector';
-import ProductActions from './ProductActions';
-import GiftBoxSelection from './GiftBoxSelection';
-import { getStockForSize } from '@/utils/stockManagement';
-import { canItemBePersonalized, getPersonalizationMessage } from '@/utils/personalizationConfig';
-import { getPersonalizations } from '@/utils/personalizationStorage';
-import { calculateFinalPrice } from '@/utils/productStorage';
-import { needsSizeSelection, getDefaultSize } from '@/utils/sizeUtils';
+import { Button } from '@/components/ui/button';
+import { Minus, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { calculateFinalPrice, formatPrice } from '@/utils/priceCalculations';
+import { useCart } from '@/hooks/use-cart';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 
-interface ProductDetailContainerProps {
-  product: Product;
-  onProductAdded?: (productName: string) => void;
-}
-
-const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContainerProps) => {
+const ProductDetailContainer = ({ product }: { product: Product }) => {
+  const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
-  const [personalizationText, setPersonalizationText] = useState(() => {
-    const savedPersonalizations = getPersonalizations();
-    return savedPersonalizations[product.id] || '';
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1
   });
-  const [selectedBoxOption, setSelectedBoxOption] = useState<boolean | null>(null);
-  const [isBoxDialogOpen, setIsBoxDialogOpen] = useState(false);
-  const { addToCart } = useCart();
-  const { toast } = useToast();
-  const [selectedSize, setSelectedSize] = useState(() => getDefaultSize(product.itemgroup_product));
+  const { addItem } = useCart();
+  const isMobile = useIsMobile();
 
-  const getAvailableSizes = () => {
-    const sizeEntries = Object.entries(product.sizes);
-    return sizeEntries
-      .filter(([_, quantity]) => quantity > 0 && quantity !== '')
-      .map(([size]) => size.toUpperCase());
+  const hasDiscount = product.discount_product !== "" && 
+                     !isNaN(parseFloat(product.discount_product)) && 
+                     parseFloat(product.discount_product) > 0;
+
+  const finalPrice = calculateFinalPrice(
+    product.price,
+    product.discount_product,
+    product.itemgroup_product,
+    false
+  );
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (parseInt(product.quantity.toString()) < newQuantity) {
+      toast.error("La quantité demandée n'est pas disponible");
+      return;
+    }
+    setQuantity(newQuantity);
   };
 
-  const canPersonalize = canItemBePersonalized(product.itemgroup_product);
-  const personalizationMessage = getPersonalizationMessage(product.itemgroup_product);
-  const requiresSizeSelection = needsSizeSelection(product.itemgroup_product);
-
-  const productImages = [
-    product.image,
-    product.image2,
-    product.image3,
-    product.image4,
-  ].filter(Boolean);
-
-  const handleAddToCart = (withBox?: boolean) => {
-    if (!selectedSize && requiresSizeSelection) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez sélectionner une taille",
-        variant: "destructive",
-      });
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast.error("Veuillez sélectionner une taille");
       return;
     }
 
-    const availableStock = requiresSizeSelection 
-      ? getStockForSize(product, selectedSize) 
-      : Number(product.quantity);
-      
-    if (quantity > availableStock) {
-      toast({
-        title: "Stock insuffisant",
-        description: requiresSizeSelection 
-          ? `Il ne reste que ${availableStock} articles en stock pour la taille ${selectedSize}`
-          : `Il ne reste que ${availableStock} articles en stock`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const hasDiscount = product.discount_product !== "" && 
-                       !isNaN(parseFloat(product.discount_product)) && 
-                       parseFloat(product.discount_product) > 0;
-    
-    const finalPrice = calculateFinalPrice(product.price, product.discount_product);
-
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: finalPrice,
-      originalPrice: hasDiscount ? product.price : undefined,
-      quantity: quantity,
-      image: product.image,
+    const itemToAdd = {
+      ...product,
       size: selectedSize,
-      personalization: personalizationText,
-      withBox: withBox,
-      discount_product: product.discount_product,
-    });
+      quantity: quantity,
+    };
 
-    onProductAdded?.(product.name);
+    addItem(itemToAdd);
+    toast.success("Article ajouté au panier");
   };
 
-  const handleInitialAddToCart = () => {
-    if (product.itemgroup_product === 'chemises') {
-      if (selectedBoxOption !== null) {
-        handleAddToCart(selectedBoxOption);
-      } else {
-        setIsBoxDialogOpen(true);
-      }
-    } else {
-      handleAddToCart(false);
-    }
-  };
+  const availableSizes = Object.entries(product.sizes)
+    .filter(([_, value]) => value > 0)
+    .map(([size]) => size.toUpperCase());
 
   return (
-    <div className="grid lg:grid-cols-2 gap-12">
-      <div className="relative">
-        <ProductImageCarousel images={productImages} name={product.name} />
+    <div className="flex flex-col gap-6">
+      <div className="relative w-full aspect-square md:aspect-[4/3] overflow-hidden bg-gray-100 rounded-lg">
+        {inView && (
+          <img
+            ref={ref}
+            src={product.image}
+            alt={product.name}
+            className={cn(
+              "w-full h-full object-contain transition-opacity duration-300",
+              isImageLoaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setIsImageLoaded(true)}
+          />
+        )}
+        {(!isImageLoaded || !inView) && (
+          <div className="absolute inset-0 bg-gray-100 animate-pulse" />
+        )}
       </div>
 
-      <div className="space-y-8">
-        <ProductInfo 
-          name={product.name}
-          description={product.description}
-          price={product.price}
-          discount={product.discount_product}
-        />
-
-        {canPersonalize && (
-          <div className="mt-6">
-            <PersonalizationButton
-              productId={product.id}
-              onSave={setPersonalizationText}
-              initialText={personalizationText}
-              itemgroup_product={product.itemgroup_product}
-            />
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {product.name}
+          </h1>
+          <div className="flex items-center gap-4">
+            {hasDiscount ? (
+              <>
+                <span className="text-2xl font-bold text-[#700100]">
+                  {formatPrice(finalPrice)} TND
+                </span>
+                <span className="text-lg text-gray-500 line-through">
+                  {formatPrice(product.price)} TND
+                </span>
+              </>
+            ) : (
+              <span className="text-2xl font-bold text-gray-900">
+                {formatPrice(finalPrice)} TND
+              </span>
+            )}
           </div>
-        )}
+        </div>
 
-        {!canPersonalize && personalizationMessage && (
-          <div className="text-sm text-gray-500 italic">
-            {personalizationMessage}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-900">
+              Taille
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {availableSizes.map((size) => (
+                <Button
+                  key={size}
+                  type="button"
+                  variant={selectedSize === size ? "default" : "outline"}
+                  className={cn(
+                    "text-sm font-medium",
+                    selectedSize === size && "bg-[#700100] text-white hover:bg-[#500100]"
+                  )}
+                  onClick={() => setSelectedSize(size)}
+                >
+                  {size}
+                </Button>
+              ))}
+            </div>
           </div>
-        )}
-        
-        <div className="h-px bg-gray-200" />
 
-        <div className="space-y-6">
-          {requiresSizeSelection && (
-            <SizeSelector
-              selectedSize={selectedSize}
-              sizes={getAvailableSizes()}
-              onSizeSelect={setSelectedSize}
-              isCostume={product.itemgroup_product === 'costumes'}
-              itemGroup={product.itemgroup_product}
-            />
-          )}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-900">
+              Quantité
+            </label>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
+                className="h-8 w-8"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="text-lg font-medium w-8 text-center">
+                {quantity}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(quantity + 1)}
+                className="h-8 w-8"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
 
-          <ProductQuantitySelector
-            quantity={quantity}
-            setQuantity={setQuantity}
-            selectedSize={selectedSize}
-            product={product}
-          />
+          <Button
+            onClick={handleAddToCart}
+            className="w-full bg-[#700100] hover:bg-[#500100]"
+          >
+            Ajouter au panier
+          </Button>
+        </div>
 
-          {product.itemgroup_product === 'chemises' && (
-            <GiftBoxSelection
-              selectedBoxOption={selectedBoxOption}
-              setSelectedBoxOption={setSelectedBoxOption}
-            />
-          )}
-
-          <ProductActions
-            handleInitialAddToCart={handleInitialAddToCart}
-            product={product}
-            selectedSize={selectedSize}
-          />
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Description
+          </h2>
+          <p className="text-sm text-gray-600">
+            {product.description}
+          </p>
         </div>
       </div>
-
-      <BoxSelectionDialog
-        isOpen={isBoxDialogOpen}
-        onClose={() => setIsBoxDialogOpen(false)}
-        onConfirm={(withBox) => {
-          handleAddToCart(withBox);
-          setIsBoxDialogOpen(false);
-        }}
-      />
     </div>
   );
 };

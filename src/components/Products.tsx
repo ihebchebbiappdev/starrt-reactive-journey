@@ -37,11 +37,17 @@ const Products = () => {
   const {
     data,
     isLoading,
-    error
+    error,
+    fetchNextPage,
+    hasNextPage
   } = useInfiniteQuery({
     queryKey: ['initial-products', selectedCategory],
-    queryFn: fetchInitialProducts,
+    queryFn: ({ pageParam = 1 }) => fetchInitialProducts(pageParam),
     initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < PRODUCTS_PER_PAGE) return undefined;
+      return allPages.length + 1;
+    },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });

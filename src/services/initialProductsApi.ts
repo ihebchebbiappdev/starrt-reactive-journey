@@ -40,9 +40,9 @@ interface InitialApiResponse {
   }[];
 }
 
-export const fetchInitialProducts = async (): Promise<Product[]> => {
+export const fetchInitialProducts = async (page: number): Promise<Product[]> => {
   try {
-    const response = await axios.get<InitialApiResponse>(`${BASE_URL}/initial_get_all_products.php`);
+    const response = await axios.get<InitialApiResponse>(`${BASE_URL}/initial_get_all_products.php?page=${page}`);
     
     if (response.data.status === 'success') {
       return response.data.products
