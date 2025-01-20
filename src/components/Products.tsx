@@ -2,13 +2,13 @@ import React, { useEffect, useCallback, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { fetchPaginatedProducts } from "../services/paginatedProductsApi";
+import { fetchInitialProducts } from "../services/initialProductsApi";
 import ProductCard from "./ProductCard";
 import Categories from "./Categories";
 import { useInView } from "react-intersection-observer";
 import { preloadImage, preloadCriticalImages } from "@/utils/imageOptimization";
 
-const PRODUCTS_PER_PAGE = 10;
+const PRODUCTS_PER_PAGE = 8;
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -36,16 +36,11 @@ const Products = () => {
 
   const {
     data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
     isLoading,
     error
   } = useInfiniteQuery({
-    queryKey: ['products', selectedCategory],
-    queryFn: ({ pageParam = 1 }) => fetchPaginatedProducts(pageParam, PRODUCTS_PER_PAGE),
-    getNextPageParam: (lastPage) => 
-      lastPage.currentPage < lastPage.totalPages ? lastPage.currentPage + 1 : undefined,
+    queryKey: ['initial-products', selectedCategory],
+    queryFn: fetchInitialProducts,
     initialPageParam: 1,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -54,27 +49,15 @@ const Products = () => {
   // Preload critical images as soon as data is available
   useEffect(() => {
     if (data?.pages) {
-      const allProducts = data.pages.flatMap(page => page.products);
+      const allProducts = data.pages.flatMap(page => page);
       preloadCriticalImages(allProducts);
-    }
-  }, [data?.pages]);
-
-  // Preload next page images
-  useEffect(() => {
-    if (data?.pages) {
-      const nextPageProducts = data.pages[data.pages.length - 1]?.products || [];
-      nextPageProducts.forEach(product => {
-        if (product.image) {
-          preloadImage(product.image);
-        }
-      });
     }
   }, [data?.pages]);
 
   const filteredProducts = React.useMemo(() => {
     if (!data?.pages) return [];
     
-    const allProducts = data.pages.flatMap(page => page.products)
+    const allProducts = data.pages.flatMap(page => page)
       .filter(product => product.type_product !== "outlet");
 
     if (!selectedCategory) return allProducts;
@@ -140,26 +123,16 @@ const Products = () => {
                 </div>
               ))
             ) : (
-              filteredProducts.slice(0, 10).map((product) => (
+              filteredProducts.slice(0, PRODUCTS_PER_PAGE).map((product) => (
                 <div className="embla__slide" key={product.id}>
                   <ProductCard product={product} />
                 </div>
               ))
             )}
           </div>
-          
-          {/* Infinite scroll trigger */}
-          {!isLoading && hasNextPage && (
-            <div ref={loadMoreRef} className="h-10 w-full">
-              {isFetchingNextPage && (
-                <div className="flex justify-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#700100]"></div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
+        {/* Navigation buttons */}
         <button
           className={`embla__button embla__button--prev ${
             !prevEnabled && "embla__button--disabled"
