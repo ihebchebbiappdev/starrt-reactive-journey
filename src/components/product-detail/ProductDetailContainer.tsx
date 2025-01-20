@@ -14,7 +14,10 @@ interface ProductDetailContainerProps {
   onProductAdded?: (productName: string) => void;
 }
 
-const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContainerProps) => {
+const ProductDetailContainer: React.FC<ProductDetailContainerProps> = ({ 
+  product,
+  onProductAdded 
+}) => {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -22,7 +25,7 @@ const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContai
     triggerOnce: true,
     threshold: 0.1
   });
-  const { addItem } = useCart();
+  const { addToCart } = useCart();
   const isMobile = useIsMobile();
 
   const hasDiscount = product.discount_product !== "" && 
@@ -56,7 +59,7 @@ const ProductDetailContainer = ({ product, onProductAdded }: ProductDetailContai
       quantity: quantity,
     };
 
-    addItem(itemToAdd);
+    addToCart(itemToAdd);
     toast.success("Article ajouté au panier");
     if (onProductAdded) {
       onProductAdded(product.name);
