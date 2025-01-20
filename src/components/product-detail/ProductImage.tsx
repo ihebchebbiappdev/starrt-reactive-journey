@@ -9,8 +9,26 @@ interface ProductImageProps {
 
 const ProductImage = ({ image, name }: ProductImageProps) => {
   const [isZoomed, setIsZoomed] = useState(false);
+  const [quality, setQuality] = useState<'low' | 'high'>('low');
 
-  const toggleZoom = () => setIsZoomed(!isZoomed);
+  const toggleZoom = () => {
+    setIsZoomed(!isZoomed);
+    // Load high quality when zooming
+    if (!isZoomed) setQuality('high');
+  };
+
+  // Generate optimized image URL
+  const getOptimizedImageUrl = (url: string, quality: 'low' | 'high') => {
+    // If it's already a data URL or doesn't have a valid extension, return as is
+    if (url.startsWith('data:') || !url.match(/\.(jpg|jpeg|png|webp|gif)$/i)) {
+      return url;
+    }
+
+    // Add quality parameters
+    const separator = url.includes('?') ? '&' : '?';
+    const qualityParam = quality === 'low' ? 'q=60&w=400' : 'q=100&w=800';
+    return `${url}${separator}${qualityParam}`;
+  };
 
   return (
     <motion.div
@@ -28,14 +46,15 @@ const ProductImage = ({ image, name }: ProductImageProps) => {
             onClick={toggleZoom}
           >
             <motion.img
-              src={image}
+              src={getOptimizedImageUrl(image, 'high')}
               alt={name}
               className="max-w-full max-h-full object-contain"
               layoutId="product-image"
-              loading="lazy"
+              loading="eager"
               decoding="async"
-              fetchPriority="low"
+              fetchPriority="high"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onLoad={() => setQuality('high')}
             />
             <button
               className="absolute top-4 right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
@@ -52,13 +71,18 @@ const ProductImage = ({ image, name }: ProductImageProps) => {
               onClick={toggleZoom}
             >
               <img
-                src={image}
+                src={getOptimizedImageUrl(image, quality)}
                 alt={name}
                 className="w-full h-full object-contain mix-blend-normal p-4 transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
+                loading="eager"
                 decoding="async"
-                fetchPriority="low"
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                onLoad={() => {
+                  // Preload high quality version after low quality is loaded
+                  const highQualityImg = new Image();
+                  highQualityImg.src = getOptimizedImageUrl(image, 'high');
+                }}
               />
             </motion.div>
             <button
