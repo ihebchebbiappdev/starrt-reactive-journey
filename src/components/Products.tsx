@@ -6,7 +6,7 @@ import { fetchPaginatedProducts } from "../services/paginatedProductsApi";
 import ProductCard from "./ProductCard";
 import Categories from "./Categories";
 import { useInView } from "react-intersection-observer";
-import { preloadImage } from "@/utils/imageOptimization";
+import { preloadImage, preloadCriticalImages } from "@/utils/imageOptimization";
 
 const PRODUCTS_PER_PAGE = 10;
 
@@ -50,6 +50,14 @@ const Products = () => {
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
+
+  // Preload critical images as soon as data is available
+  useEffect(() => {
+    if (data?.pages) {
+      const allProducts = data.pages.flatMap(page => page.products);
+      preloadCriticalImages(allProducts);
+    }
+  }, [data?.pages]);
 
   // Preload next page images
   useEffect(() => {
