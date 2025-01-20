@@ -11,22 +11,23 @@ import { PageLoader } from "./components/PageLoader";
 import { AnimatePresence, motion } from "framer-motion";
 import { updateMetaTags } from './utils/seoUtils';
 
-const Index = React.lazy(() => import("./pages/Index"));
-const CategoryPage = React.lazy(() => import("./pages/CategoryPage"));
-const GiftUniversePage = React.lazy(() => import("./pages/GiftUniversePage"));
-const CartPage = React.lazy(() => import('./pages/CartPage'));
-const PaymentSuccessPage = React.lazy(() => import('./pages/PaymentSuccessPage'));
-const PaymentFailurePage = React.lazy(() => import('./pages/PaymentFailurePage'));
-const PromoCodesPage = React.lazy(() => import('./pages/PromoCodesPage'));
-const OrderPreviewPage = React.lazy(() => import('./pages/OrderPreviewPage'));
-const ProductDetailPage = React.lazy(() => import('./pages/ProductDetailPage'));
-const FooterCategoryPage = React.lazy(() => import('./pages/FooterCategoryPage'));
-const MondeFioriHistoire = React.lazy(() => import('./pages/MondeFioriHistoire'));
-const MondeFioriCollection = React.lazy(() => import('./pages/MondeFioriCollection'));
-const MondeFioriDNA = React.lazy(() => import('./pages/MondeFioriDNA'));
-const SurMesurePage = React.lazy(() => import('./pages/SurMesurePage'));
-const UniversCadeauxPage = React.lazy(() => import('./pages/UniversCadeauxPage'));
-const GiftCardsPage = React.lazy(() => import('@/pages/GiftCardsPage'));
+// Lazy load pages with explicit chunk names
+const Index = React.lazy(() => import(/* webpackChunkName: "index" */ "./pages/Index"));
+const CategoryPage = React.lazy(() => import(/* webpackChunkName: "category" */ "./pages/CategoryPage"));
+const GiftUniversePage = React.lazy(() => import(/* webpackChunkName: "gift-universe" */ "./pages/GiftUniversePage"));
+const CartPage = React.lazy(() => import(/* webpackChunkName: "cart" */ './pages/CartPage'));
+const PaymentSuccessPage = React.lazy(() => import(/* webpackChunkName: "payment-success" */ './pages/PaymentSuccessPage'));
+const PaymentFailurePage = React.lazy(() => import(/* webpackChunkName: "payment-failure" */ './pages/PaymentFailurePage'));
+const PromoCodesPage = React.lazy(() => import(/* webpackChunkName: "promo-codes" */ './pages/PromoCodesPage'));
+const OrderPreviewPage = React.lazy(() => import(/* webpackChunkName: "order-preview" */ './pages/OrderPreviewPage'));
+const ProductDetailPage = React.lazy(() => import(/* webpackChunkName: "product-detail" */ './pages/ProductDetailPage'));
+const FooterCategoryPage = React.lazy(() => import(/* webpackChunkName: "footer-category" */ './pages/FooterCategoryPage'));
+const MondeFioriHistoire = React.lazy(() => import(/* webpackChunkName: "monde-fiori-histoire" */ './pages/MondeFioriHistoire'));
+const MondeFioriCollection = React.lazy(() => import(/* webpackChunkName: "monde-fiori-collection" */ './pages/MondeFioriCollection'));
+const MondeFioriDNA = React.lazy(() => import(/* webpackChunkName: "monde-fiori-dna" */ './pages/MondeFioriDNA'));
+const SurMesurePage = React.lazy(() => import(/* webpackChunkName: "sur-mesure" */ './pages/SurMesurePage'));
+const UniversCadeauxPage = React.lazy(() => import(/* webpackChunkName: "univers-cadeaux" */ './pages/UniversCadeauxPage'));
+const GiftCardsPage = React.lazy(() => import(/* webpackChunkName: "gift-cards" */ '@/pages/GiftCardsPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {

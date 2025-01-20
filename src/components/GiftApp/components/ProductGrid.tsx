@@ -29,6 +29,10 @@ const ProductItem = ({
     threshold: 0.1
   });
 
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    onDragStart(e, product);
+  };
+
   const hasDiscount = product.discount_product !== "" && 
                      !isNaN(parseFloat(product.discount_product)) && 
                      parseFloat(product.discount_product) > 0;
@@ -41,7 +45,7 @@ const ProductItem = ({
     <motion.div
       ref={ref}
       draggable={!isMobile}
-      onDragStart={(e) => onDragStart(e, product)}
+      onDragStart={handleDragStart}
       onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
