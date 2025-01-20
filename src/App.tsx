@@ -1,16 +1,16 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { CartProvider } from "./components/cart/CartProvider";
 import { usePageTracking } from "./hooks/usePageTracking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PageLoader } from "./components/PageLoader";
 import { AnimatePresence, motion } from "framer-motion";
+import { updateMetaTags } from './utils/seoUtils';
 
-// Lazy load pages with minimal delay
 const Index = React.lazy(() => import("./pages/Index"));
 const CategoryPage = React.lazy(() => import("./pages/CategoryPage"));
 const GiftUniversePage = React.lazy(() => import("./pages/GiftUniversePage"));
@@ -38,9 +38,24 @@ const queryClient = new QueryClient({
   },
 });
 
-// Wrapper component to implement tracking
+// Wrapper component to implement tracking and meta updates
 const TrackingWrapper = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
   usePageTracking();
+
+  useEffect(() => {
+    // Update meta tags when route changes
+    updateMetaTags(location.pathname);
+    
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      localStorage.setItem('hasVisited', 'true');
+      if (location.pathname === '/new') {
+        localStorage.setItem('enteredThroughNew', 'true');
+      }
+    }
+  }, [location.pathname]);
+
   return <>{children}</>;
 };
 
@@ -67,7 +82,16 @@ const App = () => (
             <TrackingWrapper>
               <AnimatePresence mode="wait">
                 <Routes>
-                  {/* Routes with optimized Suspense configuration */}
+                  {/* Add /new route before the catch-all */}
+                  <Route 
+                    path="/new" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <Index />
+                      </Suspense>
+                    } 
+                  />
+                  
                   <Route 
                     path="/" 
                     element={
@@ -76,127 +100,129 @@ const App = () => (
                       </Suspense>
                     } 
                   />
-                <Route 
-                  path="/category/*" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <CategoryPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/univers-cadeaux" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <UniversCadeauxPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/univers-cadeaux/*" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <GiftUniversePage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/product/:id" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <ProductDetailPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/cart" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <CartPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/promo-codes" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <PromoCodesPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/order-preview" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <OrderPreviewPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/payment-success" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <PaymentSuccessPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/payment-failure" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <PaymentFailurePage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/footer-category/*" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <FooterCategoryPage />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/monde-fiori/histoire" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <MondeFioriHistoire />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/monde-fiori/collection" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <MondeFioriCollection />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/monde-fiori/dna" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <MondeFioriDNA />
-                    </Suspense>
-                  } 
-                />
-                <Route 
-                  path="/sur-mesure" 
-                  element={
-                    <Suspense fallback={<PageLoader />}>
-                      <SurMesurePage />
-                    </Suspense>
-                  } 
-                />
                   <Route 
-    path="/gift-cards" 
-    element={
-      <Suspense fallback={<PageLoader />}>
-        <GiftCardsPage />
-      </Suspense>
-    } 
-  />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                    path="/category/*" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <CategoryPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/univers-cadeaux" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <UniversCadeauxPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/univers-cadeaux/*" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <GiftUniversePage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/product/:id" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <ProductDetailPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/cart" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <CartPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/promo-codes" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <PromoCodesPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/order-preview" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <OrderPreviewPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/payment-success" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <PaymentSuccessPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/payment-failure" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <PaymentFailurePage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/footer-category/*" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <FooterCategoryPage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/monde-fiori/histoire" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <MondeFioriHistoire />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/monde-fiori/collection" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <MondeFioriCollection />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/monde-fiori/dna" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <MondeFioriDNA />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/sur-mesure" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <SurMesurePage />
+                      </Suspense>
+                    } 
+                  />
+                  <Route 
+                    path="/gift-cards" 
+                    element={
+                      <Suspense fallback={<PageLoader />}>
+                        <GiftCardsPage />
+                      </Suspense>
+                    } 
+                  />
+                  
+                  {/* Catch-all route should be last */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </AnimatePresence>
             </TrackingWrapper>

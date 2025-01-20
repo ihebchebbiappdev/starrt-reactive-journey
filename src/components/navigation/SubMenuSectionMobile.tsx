@@ -17,12 +17,13 @@ const SubMenuSectionMobile = ({ title, items, onClick }: SubMenuSectionMobilePro
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const handleItemClick = (href: string) => {
-    if (onClick && href && href !== "#") {
+    if (onClick) {
       onClick(href);
     }
   };
 
   const toggleExpanded = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setIsExpanded(!isExpanded);
   };
@@ -34,7 +35,12 @@ const SubMenuSectionMobile = ({ title, items, onClick }: SubMenuSectionMobilePro
         className="w-full flex items-center justify-between p-4 text-white hover:bg-white/5 rounded-lg transition-colors duration-200"
       >
         <span className="text-lg">{title}</span>
-        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        <span onClick={(e) => {
+          e.stopPropagation();
+          toggleExpanded(e);
+        }}>
+          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </span>
       </button>
 
       <AnimatePresence>
