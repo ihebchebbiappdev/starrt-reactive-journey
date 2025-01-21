@@ -13,7 +13,7 @@ const LoadingScreen = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-4 font-sans text-4xl font-bold text-primary"
+          className="mb-4 font-['Goudy_Trajan_Pro_Bold'] text-4xl font-bold text-primary"
         >
           ELLES
         </motion.h1>
