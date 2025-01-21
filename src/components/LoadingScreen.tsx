@@ -21,50 +21,50 @@ const LoadingScreen = () => {
           <div className="mt-2 flex justify-center">
             {/* CMYK-style loading bars */}
             <div className="relative h-1 w-32">
-              {/* Cyan bar */}
+              {/* Light Sky Blue bar */}
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{
-                  duration: 1,
+                  duration: 6,
                   repeat: Infinity,
                   repeatType: "reverse",
                   ease: "easeInOut",
                 }}
-                className="absolute h-full w-full origin-left bg-[#0FA0CE] opacity-80"
+                className="absolute h-full w-full origin-left bg-[#33C3F0] opacity-80"
               />
-              {/* Magenta bar */}
+              {/* Purple bar */}
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{
-                  duration: 1,
+                  duration: 6,
                   repeat: Infinity,
                   repeatType: "reverse",
                   ease: "easeInOut",
                   delay: 0.2,
                 }}
-                className="absolute h-full w-full origin-left bg-[#D946EF] opacity-80"
+                className="absolute h-full w-full origin-left bg-[#9b87f5] opacity-80"
               />
               {/* Yellow bar */}
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{
-                  duration: 1,
+                  duration: 6,
                   repeat: Infinity,
                   repeatType: "reverse",
                   ease: "easeInOut",
                   delay: 0.4,
                 }}
-                className="absolute h-full w-full origin-left bg-[#F97316] opacity-80"
+                className="absolute h-full w-full origin-left bg-[#FEF7CD] opacity-80"
               />
               {/* Black bar */}
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 transition={{
-                  duration: 1,
+                  duration: 6,
                   repeat: Infinity,
                   repeatType: "reverse",
                   ease: "easeInOut",
