@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas, Text } from "fabric";
 import { Card } from "@/components/ui/card";
-import { Image, Move, Palette, Trash2 } from "lucide-react";
+import { Image, Move, Palette, X } from "lucide-react";
 import DesignTools from "@/components/personalization/DesignTools";
 import ImageUploader from "@/components/personalization/ImageUploader";
 import UploadedImagesList from "@/components/personalization/UploadedImagesList";
@@ -36,6 +36,7 @@ const Personalization = () => {
   const [activeText, setActiveText] = useState<Text | null>(null);
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const isMobile = useIsMobile();
+  const deleteButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleDeleteActiveObject = () => {
     if (!canvas) return;
@@ -56,6 +57,9 @@ const Personalization = () => {
         setActiveText(null);
       }
       
+      if (deleteButtonRef.current) {
+        deleteButtonRef.current.style.display = 'none';
+      }
       toast.success("Élément supprimé !");
     }
   };
@@ -93,22 +97,35 @@ const Personalization = () => {
     fabricCanvas.add(placeholderText);
     fabricCanvas.renderAll();
 
-    fabricCanvas.on('object:modified', (e) => {
-      const obj = e.target;
-      if (obj instanceof Text) {
-        setActiveText(obj);
-      }
-    });
-
+    // Handle object selection for delete button
     fabricCanvas.on('selection:created', (e) => {
       const obj = e.selected?.[0];
       if (obj instanceof Text) {
         setActiveText(obj);
       }
+      if (deleteButtonRef.current) {
+        const bounds = obj?.getBoundingRect();
+        if (bounds) {
+          deleteButtonRef.current.style.display = 'block';
+          deleteButtonRef.current.style.left = `${bounds.left + bounds.width + 10}px`;
+          deleteButtonRef.current.style.top = `${bounds.top}px`;
+        }
+      }
     });
 
     fabricCanvas.on('selection:cleared', () => {
       setActiveText(null);
+      if (deleteButtonRef.current) {
+        deleteButtonRef.current.style.display = 'none';
+      }
+    });
+
+    fabricCanvas.on('object:moving', (e) => {
+      if (deleteButtonRef.current && e.target) {
+        const bounds = e.target.getBoundingRect();
+        deleteButtonRef.current.style.left = `${bounds.left + bounds.width + 10}px`;
+        deleteButtonRef.current.style.top = `${bounds.top}px`;
+      }
     });
 
     setCanvas(fabricCanvas);
@@ -211,7 +228,7 @@ const Personalization = () => {
                     onClick={handleDeleteActiveObject}
                     className="w-full"
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
+                    <X className="h-4 w-4 mr-2" />
                     Supprimer l'élément sélectionné
                   </Button>
                 </div>
@@ -239,11 +256,21 @@ const Personalization = () => {
 
           <div className="lg:col-span-6 order-first lg:order-none">
             <Card className="p-4 lg:p-6">
-              <div className="w-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+              <div className="w-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden relative">
                 <canvas 
                   ref={canvasRef} 
                   className="max-w-full touch-manipulation shadow-lg"
                 />
+                <button
+                  ref={deleteButtonRef}
+                  onClick={handleDeleteActiveObject}
+                  className="absolute hidden p-1 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                  style={{
+                    zIndex: 1000,
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
             </Card>
           </div>
