@@ -203,14 +203,15 @@ const Personalization = () => {
                 <button
                   ref={deleteButtonRef}
                   onClick={handleDeleteActiveObject}
-                  className="absolute hidden w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors flex items-center justify-center"
+                  className="absolute hidden bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors w-6 h-6 flex items-center justify-center"
                   style={{
                     zIndex: 1000,
                     right: '10px',
                     top: '10px',
+                    padding: 0,
                   }}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             </Card>
