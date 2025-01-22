@@ -60,10 +60,6 @@ const Personalization = () => {
     }
   };
 
-  const handleDeleteImage = (imageToDelete: UploadedImage) => {
-    setUploadedImages(prev => prev.filter(img => img.id !== imageToDelete.id));
-  };
-
   useEffect(() => {
     if (!canvasRef.current) return;
 
@@ -203,11 +199,11 @@ const Personalization = () => {
                 <button
                   ref={deleteButtonRef}
                   onClick={handleDeleteActiveObject}
-                  className="absolute hidden p-1 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                  className="absolute hidden w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors flex items-center justify-center"
                   style={{
                     zIndex: 1000,
-                    right: '5px',
-                    top: '5px',
+                    right: '10px',
+                    top: '10px',
                   }}
                 >
                   <X className="h-3 w-3" />
