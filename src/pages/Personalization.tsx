@@ -7,7 +7,6 @@ import ImageUploader from "@/components/personalization/ImageUploader";
 import UploadedImagesList from "@/components/personalization/UploadedImagesList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
 interface UploadedImage {
   id: string;
@@ -44,13 +43,11 @@ const Personalization = () => {
       canvas.remove(activeObject);
       canvas.renderAll();
       
-      // If it's an image, remove it from uploadedImages
       if (activeObject.type === 'image') {
         const imageUrl = (activeObject as any)._element?.src;
         setUploadedImages(prev => prev.filter(img => img.url !== imageUrl));
       }
       
-      // If it's text, clear the text state
       if (activeObject.type === 'text') {
         setText('');
         setActiveText(null);
@@ -80,7 +77,6 @@ const Personalization = () => {
       preserveObjectStacking: true,
     });
 
-    // Add placeholder text
     const placeholderText = new Text("Tapez votre texte ici...", {
       left: fabricCanvas.width! / 2,
       top: fabricCanvas.height! / 2,
@@ -96,7 +92,6 @@ const Personalization = () => {
     fabricCanvas.add(placeholderText);
     fabricCanvas.renderAll();
 
-    // Handle object selection for delete button
     fabricCanvas.on('selection:created', (e) => {
       const obj = e.selected?.[0];
       if (obj instanceof Text) {
@@ -147,12 +142,10 @@ const Personalization = () => {
   useEffect(() => {
     if (!canvas) return;
 
-    // Clear existing text objects
     const existingTexts = canvas.getObjects().filter(obj => obj instanceof Text);
     existingTexts.forEach(textObj => canvas.remove(textObj));
 
     if (text) {
-      // If there's user input, add the actual text
       const fabricText = new Text(text, {
         left: canvas.width! / 2,
         top: canvas.height! / 2,
@@ -174,7 +167,6 @@ const Personalization = () => {
       canvas.setActiveObject(fabricText);
       setActiveText(fabricText);
     } else {
-      // If no text, show placeholder
       const placeholderText = new Text("Tapez votre texte ici...", {
         left: canvas.width! / 2,
         top: canvas.height! / 2,
@@ -211,12 +203,14 @@ const Personalization = () => {
                 <button
                   ref={deleteButtonRef}
                   onClick={handleDeleteActiveObject}
-                  className="absolute hidden p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                  className="absolute hidden p-1 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
                   style={{
                     zIndex: 1000,
+                    right: '5px',
+                    top: '5px',
                   }}
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </button>
               </div>
             </Card>
@@ -225,7 +219,7 @@ const Personalization = () => {
           <div className="lg:col-span-4">
             <Card className="p-4 lg:p-6 space-y-6">
               <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2 mb-6">
+                <h2 className="text-xl font-semibold flex items-center gap-2 mb-6 justify-start">
                   <Palette className="h-5 w-5" />
                   Outils de Design
                 </h2>
@@ -241,16 +235,6 @@ const Personalization = () => {
                   canvas={canvas}
                   fonts={fonts}
                 />
-
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteActiveObject}
-                    className="w-full"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
               </div>
 
               <div className="pt-6 border-t border-gray-100">
