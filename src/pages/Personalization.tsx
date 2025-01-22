@@ -60,6 +60,10 @@ const Personalization = () => {
     }
   };
 
+  const handleDeleteImage = (imageToDelete: UploadedImage) => {
+    setUploadedImages(prev => prev.filter(img => img.id !== imageToDelete.id));
+  };
+
   useEffect(() => {
     if (!canvasRef.current) return;
 
