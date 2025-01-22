@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas, Text } from "fabric";
 import { Card } from "@/components/ui/card";
-import { Image, Move, Palette, X } from "lucide-react";
+import { Image, Palette, X } from "lucide-react";
 import DesignTools from "@/components/personalization/DesignTools";
 import ImageUploader from "@/components/personalization/ImageUploader";
 import UploadedImagesList from "@/components/personalization/UploadedImagesList";
-import ActionButtons from "@/components/personalization/ActionButtons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -202,10 +201,31 @@ const Personalization = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
-          <div className="lg:col-span-3 space-y-4 lg:space-y-6">
-            <Card className="p-4 lg:p-6 space-y-4 lg:space-y-6">
+          <div className="lg:col-span-8 order-first">
+            <Card className="p-4 lg:p-6">
+              <div className="w-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden relative min-h-[600px]">
+                <canvas 
+                  ref={canvasRef} 
+                  className="max-w-full touch-manipulation shadow-lg"
+                />
+                <button
+                  ref={deleteButtonRef}
+                  onClick={handleDeleteActiveObject}
+                  className="absolute hidden p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                  style={{
+                    zIndex: 1000,
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-4">
+            <Card className="p-4 lg:p-6 space-y-6">
               <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2 mb-6">
                   <Palette className="h-5 w-5" />
                   Outils de Design
                 </h2>
@@ -222,18 +242,23 @@ const Personalization = () => {
                   fonts={fonts}
                 />
 
-                <div className="mt-4">
+                <div className="mt-6 pt-6 border-t border-gray-100">
                   <Button
                     variant="destructive"
                     onClick={handleDeleteActiveObject}
                     className="w-full"
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Supprimer l'élément sélectionné
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
+              </div>
 
-                <div className="mt-6">
+              <div className="pt-6 border-t border-gray-100">
+                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
+                  <Image className="h-5 w-5" />
+                  Images Téléchargées
+                </h2>
+                <div className="space-y-4">
                   <ImageUploader
                     canvas={canvas}
                     onImageUpload={(image) => {
@@ -241,71 +266,33 @@ const Personalization = () => {
                       toast.success("Image ajoutée avec succès !");
                     }}
                   />
+                  <UploadedImagesList 
+                    images={uploadedImages}
+                    canvas={canvas}
+                    onImageClick={(image) => {
+                      if (!canvas) return;
+                      const obj = canvas.getObjects().find(
+                        obj => obj.type === 'image' && (obj as any)._element?.src === image.url
+                      );
+                      if (obj) {
+                        canvas.setActiveObject(obj);
+                        canvas.renderAll();
+                      }
+                    }}
+                    onOpacityChange={(image, opacity) => {
+                      if (!canvas) return;
+                      const obj = canvas.getObjects().find(
+                        obj => obj.type === 'image' && (obj as any)._element?.src === image.url
+                      );
+                      if (obj) {
+                        obj.set('opacity', opacity);
+                        canvas.renderAll();
+                      }
+                    }}
+                    onDeleteImage={handleDeleteImage}
+                  />
                 </div>
               </div>
-            </Card>
-
-            <Card className="p-4 lg:p-6 space-y-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Move className="h-5 w-5" />
-                Actions
-              </h2>
-              <ActionButtons canvas={canvas} />
-            </Card>
-          </div>
-
-          <div className="lg:col-span-6 order-first lg:order-none">
-            <Card className="p-4 lg:p-6">
-              <div className="w-full flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden relative">
-                <canvas 
-                  ref={canvasRef} 
-                  className="max-w-full touch-manipulation shadow-lg"
-                />
-                <button
-                  ref={deleteButtonRef}
-                  onClick={handleDeleteActiveObject}
-                  className="absolute hidden p-1 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
-                  style={{
-                    zIndex: 1000,
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </Card>
-          </div>
-
-          <div className="lg:col-span-3">
-            <Card className="p-4 lg:p-6">
-              <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
-                <Image className="h-5 w-5" />
-                Images Téléchargées
-              </h2>
-              <UploadedImagesList 
-                images={uploadedImages}
-                canvas={canvas}
-                onImageClick={(image) => {
-                  if (!canvas) return;
-                  const obj = canvas.getObjects().find(
-                    obj => obj.type === 'image' && (obj as any)._element?.src === image.url
-                  );
-                  if (obj) {
-                    canvas.setActiveObject(obj);
-                    canvas.renderAll();
-                  }
-                }}
-                onOpacityChange={(image, opacity) => {
-                  if (!canvas) return;
-                  const obj = canvas.getObjects().find(
-                    obj => obj.type === 'image' && (obj as any)._element?.src === image.url
-                  );
-                  if (obj) {
-                    obj.set('opacity', opacity);
-                    canvas.renderAll();
-                  }
-                }}
-                onDeleteImage={handleDeleteImage}
-              />
             </Card>
           </div>
         </div>
