@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { products } from "@/config/products";
 import ProductCard from "@/components/products/ProductCard";
+import FeaturesSection from "@/components/features/FeaturesSection";
 
 const VetementsCuisine = () => {
   const [sortBy, setSortBy] = useState("recommended");
@@ -52,39 +53,7 @@ const VetementsCuisine = () => {
       </div>
 
       {/* Features Section */}
-      <div className="bg-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Qualité Premium</h3>
-              <p className="text-gray-600">Des matériaux durables sélectionnés avec soin</p>
-            </div>
-            <div className="text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Livraison Rapide</h3>
-              <p className="text-gray-600">Expédition sous 24/48h en France</p>
-            </div>
-            <div className="text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Service Client</h3>
-              <p className="text-gray-600">Une équipe à votre écoute 6j/7</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <FeaturesSection />
 
       {/* Products Section */}
       <section id="products" className="py-16">
