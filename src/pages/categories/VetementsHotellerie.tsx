@@ -1,9 +1,18 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { products } from "@/config/products";
+import ProductCard from "@/components/products/ProductCard";
+import FeaturesSection from "@/components/features/FeaturesSection";
 
 const VetementsHotellerie = () => {
   const [sortBy, setSortBy] = useState("recommended");
@@ -11,6 +20,7 @@ const VetementsHotellerie = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
       <div className="bg-white shadow-sm">
         <div className="container mx-auto py-3 px-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -21,6 +31,7 @@ const VetementsHotellerie = () => {
         </div>
       </div>
 
+      {/* Hero Section */}
       <div className="relative h-[400px] md:h-[500px] overflow-hidden">
         <img
           src="/lovable-uploads/98a68746-eff6-4ad1-b7d9-7fed922db14f.png"
@@ -41,31 +52,64 @@ const VetementsHotellerie = () => {
         </div>
       </div>
 
+      {/* Features Section */}
+      <FeaturesSection />
+
+      {/* Products Section */}
       <section id="products" className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
+            {/* Sorting Section */}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">Nos Produits</h2>
+              <div className="flex items-center gap-4">
+                <Filter className="h-5 w-5 text-gray-500" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recommended">Recommandés</SelectItem>
+                    <SelectItem value="price-asc">Prix croissant</SelectItem>
+                    <SelectItem value="price-desc">Prix décroissant</SelectItem>
+                    <SelectItem value="newest">Plus récents</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {hotellerieProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-                  <div className="relative aspect-square">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                    <p className="text-gray-600 mb-4">{product.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold text-primary">{product.startingPrice} €</span>
-                      <Button asChild>
-                        <Link to="/devis">Demander un devis</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description}
+                  price={product.startingPrice}
+                  image={product.image || '/placeholder.png'}
+                />
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="bg-primary text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Restez informé</h2>
+            <p className="mb-8">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres et nouveautés.</p>
+            <div className="flex gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Votre email"
+                className="flex-1 px-4 py-2 rounded-lg text-gray-900"
+              />
+              <Button className="bg-white text-primary hover:bg-gray-100">
+                S'inscrire
+              </Button>
             </div>
           </div>
         </div>
