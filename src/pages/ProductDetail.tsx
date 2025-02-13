@@ -189,7 +189,7 @@ const ProductDetail = () => {
           <h2 className="text-2xl font-bold text-primary mb-8">
             Produits similaires
           </h2>
-          <ProductGrid products={relatedProducts} onAddToCart={() => {}} />
+          <ProductGrid onAddToCart={() => {}} />
         </div>
       </div>
     </>

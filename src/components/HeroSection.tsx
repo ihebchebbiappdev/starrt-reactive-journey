@@ -3,6 +3,9 @@ import { ArrowDown, Instagram, Facebook, Linkedin } from 'lucide-react';
 
 export const HeroSection = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [colorIndex, setColorIndex] = useState(0);
+
+  const colors = ['#A7C6ED', '#C1A7F5', '#F5E56B', '#333333'];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -13,14 +16,22 @@ export const HeroSection = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % colors.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative min-h-[90vh] overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-300 ease-out"
         style={{
-          backgroundImage: 'url("https://placehold.co/1920x1080")',
-          transform: `translateY(${scrollY * 0.5}px)`,
+          backgroundImage: 'url("/mainbg.png")', // Adjust the file extension if needed
         }}
+        
       />
       
       {/* Overlay */}
@@ -48,31 +59,6 @@ export const HeroSection = () => {
             <ArrowDown className="h-8 w-8 text-white" />
           </div>
         </div>
-      </div>
-
-      {/* Social Media Icons */}
-      <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
-        <a 
-          href="#instagram" 
-          className="rounded-full bg-white p-3 shadow-lg transition-transform hover:scale-110 hover:shadow-xl"
-          aria-label="Instagram"
-        >
-          <Instagram className="h-6 w-6 text-primary" />
-        </a>
-        <a 
-          href="#facebook" 
-          className="rounded-full bg-white p-3 shadow-lg transition-transform hover:scale-110 hover:shadow-xl"
-          aria-label="Facebook"
-        >
-          <Facebook className="h-6 w-6 text-primary" />
-        </a>
-        <a 
-          href="#linkedin" 
-          className="rounded-full bg-white p-3 shadow-lg transition-transform hover:scale-110 hover:shadow-xl"
-          aria-label="LinkedIn"
-        >
-          <Linkedin className="h-6 w-6 text-primary" />
-        </a>
       </div>
     </section>
   );

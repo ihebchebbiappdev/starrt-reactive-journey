@@ -1,61 +1,35 @@
+
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 import { toast } from "sonner";
-import { Canvas, Image as FabricImage } from "fabric";
+import { Canvas } from "fabric";
 
 interface ImageUploaderProps {
   canvas: Canvas | null;
-  onImageUpload: (image: { id: string; url: string; name: string }) => void;
+  selectedCategory: string | null;
+  onImageUpload: (file: File) => void;
 }
 
-const ImageUploader = ({ canvas, onImageUpload }: ImageUploaderProps) => {
+const ImageUploader = ({ canvas, onImageUpload, selectedCategory }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!canvas || !event.target.files?.[0]) return;
+    if (!selectedCategory) {
+      toast.error("Veuillez sélectionner un produit d'abord");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
 
-    const file = event.target.files[0];
-    const reader = new FileReader();
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    reader.onload = (e) => {
-      if (!e.target?.result) return;
-      
-      FabricImage.fromURL(e.target.result.toString(), {
-        crossOrigin: 'anonymous',
-      }).then((fabricImage) => {
-        if (fabricImage) {
-          fabricImage.scaleToWidth(150);
-          fabricImage.set({
-            left: canvas.width! / 2,
-            top: canvas.height! / 2,
-            originX: 'center',
-            originY: 'center',
-            cornerColor: 'rgba(102,153,255,0.5)',
-            cornerSize: 12,
-            transparentCorners: false,
-            hasControls: true,
-            hasBorders: true,
-          });
-          canvas.add(fabricImage);
-          canvas.setActiveObject(fabricImage);
-          canvas.renderAll();
-          
-          onImageUpload({
-            id: Date.now().toString(),
-            url: e.target.result as string,
-            name: file.name
-          });
-        }
-      }).catch(error => {
-        console.error('Error loading image:', error);
-        toast.error("Erreur lors du chargement de l'image");
-      });
-    };
-
-    reader.readAsDataURL(file);
+    onImageUpload(file);
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -64,18 +38,26 @@ const ImageUploader = ({ canvas, onImageUpload }: ImageUploaderProps) => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">Ajouter une Image</Label>
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2">
         <Input
           type="file"
           accept="image/*"
           ref={fileInputRef}
           onChange={handleImageUpload}
           className="hidden"
+          disabled={!selectedCategory}
         />
         <Button 
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            if (!selectedCategory) {
+              toast.error("Veuillez sélectionner un produit d'abord");
+              return;
+            }
+            fileInputRef.current?.click();
+          }}
           className="w-full"
           variant="secondary"
+          disabled={!selectedCategory}
         >
           <Upload className="h-4 w-4 mr-2" />
           Télécharger une Image
@@ -86,3 +68,4 @@ const ImageUploader = ({ canvas, onImageUpload }: ImageUploaderProps) => {
 };
 
 export default ImageUploader;
+

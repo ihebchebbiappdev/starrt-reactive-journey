@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { Layout } from './Layout';
 import LoadingScreen from './LoadingScreen';
+import Newsletter from './Newsletter';
 
 interface PageWrapperProps {
   children: React.ReactNode;
@@ -27,7 +29,10 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        children
+        <>
+          {children}
+          <Newsletter />
+        </>
       )}
     </Layout>
   );
