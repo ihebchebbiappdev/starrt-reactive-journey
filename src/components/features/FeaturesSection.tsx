@@ -1,5 +1,5 @@
 
-import { Check, Clock, HeadsetMic } from "lucide-react";
+import { Check, Clock, Headset } from "lucide-react";
 
 const FeaturesSection = () => {
   return (
@@ -22,7 +22,7 @@ const FeaturesSection = () => {
           </div>
           <div className="text-center">
             <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HeadsetMic className="h-8 w-8 text-primary" />
+              <Headset className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Service Client</h3>
             <p className="text-gray-600">Une équipe à votre écoute 6j/7</p>
