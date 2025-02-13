@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Star, StarHalf, ArrowRight } from "lucide-react";
+import { ChevronRight, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,46 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { products } from "@/config/products";
+import ProductCard from "@/components/products/ProductCard";
 
 const VetementsCuisine = () => {
   const [sortBy, setSortBy] = useState("recommended");
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-
   const cuisineProducts = products.filter(p => p.category === 'vetements-cuisine');
-
-  const getBadgeStyle = (type: 'promo' | 'destockage' | 'new') => {
-    switch (type) {
-      case 'promo':
-        return 'bg-red-600';
-      case 'destockage':
-        return 'bg-blue-600';
-      case 'new':
-        return 'bg-green-600';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const renderStars = (score: number) => {
-    const stars = [];
-    const fullStars = Math.floor(score);
-    const hasHalfStar = score % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
-    }
-    if (hasHalfStar) {
-      stars.push(<StarHalf key="half" className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
-    }
-    const remainingStars = 5 - Math.ceil(score);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
-    }
-    return stars;
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
       <div className="bg-white shadow-sm">
         <div className="container mx-auto py-3 px-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -61,6 +30,7 @@ const VetementsCuisine = () => {
         </div>
       </div>
 
+      {/* Hero Section */}
       <div className="relative h-[400px] md:h-[500px] overflow-hidden">
         <img
           src="/lovable-uploads/98a68746-eff6-4ad1-b7d9-7fed922db14f.png"
@@ -81,31 +51,96 @@ const VetementsCuisine = () => {
         </div>
       </div>
 
+      {/* Features Section */}
+      <div className="bg-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Qualité Premium</h3>
+              <p className="text-gray-600">Des matériaux durables sélectionnés avec soin</p>
+            </div>
+            <div className="text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Livraison Rapide</h3>
+              <p className="text-gray-600">Expédition sous 24/48h en France</p>
+            </div>
+            <div className="text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Service Client</h3>
+              <p className="text-gray-600">Une équipe à votre écoute 6j/7</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Section */}
       <section id="products" className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
+            {/* Sorting Section */}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold">Nos Produits</h2>
+              <div className="flex items-center gap-4">
+                <Filter className="h-5 w-5 text-gray-500" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recommended">Recommandés</SelectItem>
+                    <SelectItem value="price-asc">Prix croissant</SelectItem>
+                    <SelectItem value="price-desc">Prix décroissant</SelectItem>
+                    <SelectItem value="newest">Plus récents</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {cuisineProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-                  <div className="relative aspect-square">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                    <p className="text-gray-600 mb-4">{product.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold text-primary">{product.startingPrice} €</span>
-                      <Button asChild>
-                        <Link to="/devis">Demander un devis</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  description={product.description}
+                  price={product.startingPrice}
+                  image={product.image || '/placeholder.png'}
+                />
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="bg-primary text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Restez informé</h2>
+            <p className="mb-8">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres et nouveautés.</p>
+            <div className="flex gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Votre email"
+                className="flex-1 px-4 py-2 rounded-lg text-gray-900"
+              />
+              <Button className="bg-white text-primary hover:bg-gray-100">
+                S'inscrire
+              </Button>
             </div>
           </div>
         </div>
